@@ -840,7 +840,13 @@ else:
         pool.join()  # wait workers to finish
 
         for key in config["output_keys"]:
-            combine_and_print_output(config[key + "_outfile"], key, headers[key])
+            combine_and_print_output(
+                config[key + "_outfile"],
+                key,
+                headers[key],
+                prevgc_df=prevgc_df,
+                config=config,
+            )
     else:  # single thread
         output_fh = {}  # output filehandles
         output_data = {}

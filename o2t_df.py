@@ -44,7 +44,9 @@ def read_ortho_df(config=None):
     # eprint("Also loaded {} trembl fragments".format(len(tr_fragments_df)))
 
     eprint(
-        "\nThere are {} accessions flagged as outliers".format(ortho_df["outlier"].sum())
+        "\nThere are {} accessions flagged as outliers".format(
+            ortho_df["outlier"].sum()
+        )
     )
 
     return ortho_df, prevgc_df

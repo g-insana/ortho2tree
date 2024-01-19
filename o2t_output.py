@@ -5,6 +5,7 @@ module providing functions related to output files
 """
 from glob import glob
 from o2t_utils import eprint, print_subfiles, delete_files
+from o2t_gc_integration import dump_prev_changes
 
 
 def output_headers(config=None):
@@ -85,7 +86,7 @@ def output_headers(config=None):
     return headers
 
 
-def combine_and_print_output(filename, key, header):
+def combine_and_print_output(filename, key, header, prevgc_df=None, config=None):
     """
     combine the temporary output files produced by each thread to create final output files
     """
@@ -99,6 +100,10 @@ def combine_and_print_output(filename, key, header):
         )
         with open(filename, "w", encoding="utf-8") as fh:
             fh.write(header)
+            if key == "gc":
+                dump_prev_changes(
+                    fh, prevgc_df, config=config
+                )  # prepend the previous suggestions (removing multithread conflicts from the given outfile)
             print_subfiles(tempfiles, fh)
         delete_files(tempfiles)  # cleanup
     else:
