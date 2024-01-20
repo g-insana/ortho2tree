@@ -137,21 +137,38 @@ def read_prev_changes(ortho_df, config=None):
         skip_blank_lines=True,
         names=prev_changes_columns,
     )
+    # sort the df
+    prevgc_df.sort_values(by=["release", "dataset", "pantherid", "org"], inplace=True)
+    prevgc_df_size = len(prevgc_df)
+    eprint("INT prevgc file contains {} unique suggestions".format(prevgc_df_size))
 
-    # remove duplicates, caused by a change in pthr family assignment across analyses, e.g.:
-    # PTHR11461:SF13	HUMAN	sp|P01019
-    # PTHR11461:SF379	HUMAN	sp|P01019
-    prevgc_df.drop_duplicates(
-        subset=["org", "canon_acc", "prop_acc"], keep="last", inplace=True
-    )
-
-    eprint("  prevgc file contains {} unique suggestions".format(len(prevgc_df)))
+    # split entry type
     prevgc_df[["oldcanon_type", "oldcanon"]] = prevgc_df["canon_acc"].str.split(
         "|", expand=True
     )
     prevgc_df[["replacement_type", "replacement"]] = prevgc_df["prop_acc"].str.split(
         "|", expand=True
     )
+
+    # remove duplicates, caused by a change in pthr family assignment across analyses, e.g.:
+    # PTHR11461:SF13	HUMAN	sp|P01019
+    # PTHR11461:SF379	HUMAN	sp|P01019
+    prevgc_df.drop_duplicates(
+        subset=["org", "oldcanon", "replacement"], keep="last", inplace=True
+    )
+
+    # remove conflicting suggestions caused by a change in pthr family assignment across analyses e.g.:
+    # PTHR12894:SF48 	tr|A0A8I6APH2 	tr|A0A0G2JV19 	2023_04
+    # PTHR12894:SF27 	tr|D3ZXT8 	tr|A0A0G2JV19 	2023_05
+    prevgc_df.drop_duplicates(subset=["org", "oldcanon"], keep="last", inplace=True)
+    prevgc_df.drop_duplicates(subset=["org", "replacement"], keep="last", inplace=True)
+
+    if prevgc_df_size != len(prevgc_df):
+        eprint(
+            "INT after cleaning up cases of changed family assignment, prevgc file now contains {} unique suggestions".format(
+                len(prevgc_df)
+            )
+        )
 
     # CLEANING:
     # 1) entries where either cano or suggestion are no more present in genecentric are removed
