@@ -25,7 +25,6 @@ from o2t_output import clean_up_tempfiles, combine_and_print_output, output_head
 from o2t_scan_ndata import scan_ndata_file
 from o2t_utils import (
     check_all_files_exist,
-    delete_files,
     elapsed_time,
     eprint,
     get_orthologs_df_from_pantherid,
@@ -728,7 +727,7 @@ else:
         )
     )
     if CHECK_ALL_PROCESSED:
-        check_all_files_exist(config["semaphores_dir"], orthogroups, ".done")
+        check_all_files_exist(config["semaphores_dir"], orthogroups, "done")
 
 
 if len(config["groups2run"]):

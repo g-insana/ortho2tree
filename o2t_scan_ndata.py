@@ -310,7 +310,7 @@ def scan_ndata_file(
     suggestion_ranking_weights = config["suggestion_ranking_weights"]
 
     # if we have previous suggestions for this orthoid, get them
-    if prevgc_df is not None:
+    if not prevgc_df.empty:
         prevgc_group_df = prevgc_df[prevgc_df["pantherid"] == orthoid]
 
     gc_output_text = ""  # all cumulative gc
@@ -984,7 +984,7 @@ def scan_ndata_file(
             suggestions_output_text += formatted_change + "\n"
 
             # if we have a prevgc_df, check the new_sugg against prev_sugg for possible conflicts or flipflips:
-            if prevgc_df is not None:
+            if not prevgc_df.empty:
                 print_new_sugg, conflict_text = check_suggestion_against_prev(
                     prevgc_group_df, p_taxa, canon_acc, p_acc, orthoid
                 )
@@ -996,6 +996,10 @@ def scan_ndata_file(
                 if conflict_text:
                     # to be able to remove conflicts even in multi-thread operation (the marking of conflict will not be shared across parallel workers)
                     conflict_output_text += conflict_text
+            else:  # simply print the new_sugg
+                gc_output_text += formatted_change_md5 + "\t{}\t{}\n".format(
+                    config["up_release"], config["dataset_name"]
+                )
 
             # update labelling info for all accessions in the suggested clade
             # accessions from the clade to which suggestion belongs to
