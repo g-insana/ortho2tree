@@ -860,6 +860,9 @@ else:
         else:
             iterator = orthogroups
 
+        if not prevgc_df.empty:  # prepend the previous suggestions to gc output
+            dump_prev_changes(output_fh["gc"], prevgc_df, config=config)
+
         for orthoid in iterator:
             (
                 output_data["gc"],
@@ -877,9 +880,6 @@ else:
             for key in config["output_keys"]:
                 if output_data[key] != "":
                     output_fh[key].write(output_data[key])
-
-        if not prevgc_df.empty:  # append the previous suggestions to gc output
-            dump_prev_changes(output_fh["gc"], prevgc_df, config=config)
 
         # close files
         for fh in output_fh.values():

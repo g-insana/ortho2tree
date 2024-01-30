@@ -309,10 +309,6 @@ def scan_ndata_file(
     """
     suggestion_ranking_weights = config["suggestion_ranking_weights"]
 
-    # if we have previous suggestions for this orthoid, get them
-    if not prevgc_df.empty:
-        prevgc_group_df = prevgc_df[prevgc_df["pantherid"] == orthoid]
-
     gc_output_text = ""  # all cumulative gc
     suggestions_output_text = ""  # let's print all suggestions from one file together
     confirmed_output_text = (
@@ -986,7 +982,7 @@ def scan_ndata_file(
             # if we have a prevgc_df, check the new_sugg against prev_sugg for possible conflicts or flipflips:
             if not prevgc_df.empty:
                 print_new_sugg, conflict_text = check_suggestion_against_prev(
-                    prevgc_group_df, p_taxa, canon_acc, p_acc, orthoid
+                    prevgc_df, p_taxa, canon_acc, p_acc, orthoid
                 )
                 if print_new_sugg:
                     # if all ok (if check returns True) we'll print the new_sugg also to gc_output

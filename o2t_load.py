@@ -86,11 +86,6 @@ left outer join dbentry_2_database partition("GeneID") geneid on d.dbentry_id=ge
 left outer join mane_query m on m.accession=gce.accession
 where release='{0}'
 and gce.tax_id in ({1})
-and group_id in (
-    select group_id from sptr.gene_centric_entry gce
-    where release='{0}'
-    and tax_id in ({1})
-)
 and exists (select 1 from sptr.gene_centric_entry gce3 where gce.group_id=gce3.group_id and release='{0}' and gce3.is_canonical=1) --needs a canonical
 and not exists (select 1 from sptr.gene_centric_entry gce2 where gce.group_id=gce2.group_id and release='{0}' and gce.accession=gce2.accession and gce2.is_canonical=1 and gce.is_canonical is null)
 --and (is_fragment=0 or gce.entry_type=0) --we get all including fragments
