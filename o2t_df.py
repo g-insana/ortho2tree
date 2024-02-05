@@ -93,7 +93,7 @@ def create_ortho_df(panther_df, gc_df, config=None, get_sequences_fn=None):
         )
         sys.exit(1)
 
-    ortho_df["org_x"].fillna(ortho_df["org_y"], inplace=True)
+    ortho_df["org_x"] = ortho_df["org_x"].fillna(ortho_df["org_y"])
     ortho_df.drop(columns=["org_y"], inplace=True)
     ortho_df.rename(columns={"org_x": "org"}, inplace=True)
 

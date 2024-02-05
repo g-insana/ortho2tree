@@ -435,6 +435,23 @@ def simulate_changes(ortho_df, config=None):
         ].str.split("|", expand=True)
         prev_suggestions_df.drop(columns=["canon_acc", "prop_acc"], inplace=True)
 
+        # cleaning no more active accessions
+        prev_suggestions_df.drop_duplicates(
+            subset=["org", "oldcanon", "replacement"], keep="last", inplace=True
+        )
+        prevsugg_notfound = prev_suggestions_df[
+            ~prev_suggestions_df[["oldcanon", "replacement"]]
+            .isin(ortho_df.index)
+            .all(axis=1)
+        ]
+        prevsugg_notfound_count = len(prevsugg_notfound)
+        eprint(
+            "INT There are at least {} accessions from simulation file that cannot be found in current genecentric data. Dropping them.".format(
+                prevsugg_notfound_count
+            )
+        )
+        prev_suggestions_df.drop(prevsugg_notfound.index, inplace=True)
+
         # minimal consistency check: all the oldcanon we are changing should actually be canonicals and vice versa
         oldcanon_check = ortho_df.loc[
             prev_suggestions_df["oldcanon"]
