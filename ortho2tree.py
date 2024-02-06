@@ -168,7 +168,7 @@ config["ignore_cache"] = False
 # if we are running in the notebook (ortho2tree.ipynb)
 if sys.argv[0].find("pykernel_launcher") != -1:
     # default set for notebook; override to test other sets
-    config["dataset_name"] = "pmam2024_01om22"
+    config["dataset_name"] = "pln2024_01"
 else:  # we are running from the shell as ortho2tree.py
     USAGE_EXAMPLE = """
     Examples:
@@ -327,7 +327,9 @@ for key in file_keys:
         config[key] = f"{key[:-10]}_dump{config['instamp']}.gz"
     elif key.endswith("_dumpfile"):
         config[key] = f"{key[:-9]}_dump{config['outstamp']}.gz"
-    else:
+    elif key in ["unmapped_canonicals_file", "low_taxa_groups_file"]:
+        config[key] = f"{key[:-5]}{config['outstamp']}"
+    else:  # compressed
         config[key] = f"{key[:-5]}{config['outstamp']}.gz"
 
 
@@ -649,9 +651,9 @@ else:
     del panther_df
     del gc_df
 
-if not config["skip_reprocessing_orthogroups"] and len(config["groups2run"]) == 0:
+if len(config["groups2run"]) == 0:
     # print stats and filter out groups lower than min_taxa
-    ortho_df_stats(ortho_df, config=config)
+    ortho_df = ortho_df_stats(ortho_df, config=config)
 
 orthogroups = set(ortho_df["pantherid"].drop_duplicates().values)
 all_canonicals = set(ortho_df[ortho_df["is_canonical"]].index.to_list())

@@ -35,10 +35,6 @@ def read_ortho_df(config=None):
     else:
         prevgc_df = pd.DataFrame()
 
-    if config.get("sugg_file", False):
-        # optional simulation of applying changes (previous suggestions)
-        simulate_changes(ortho_df, config=config)
-
     # if we wanted to see the trembl fragments:
     # tr_fragments_df = pd.read_csv(config['tr_fragments_df_cachefile'], index_col='acc')
     # eprint("Also loaded {} trembl fragments".format(len(tr_fragments_df)))
@@ -494,3 +490,5 @@ def ortho_df_stats(ortho_df, config=None):
             b["cano_is_longest"].sum()
         )
     )
+
+    return ortho_df
