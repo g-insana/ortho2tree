@@ -10,6 +10,7 @@ import shutil
 import pandas as pd
 from o2t_utils import eprint, download_file
 import urllib.request
+from urllib.error import URLError
 from contextlib import closing
 
 
@@ -23,9 +24,24 @@ def get_panther_seq_classification(organism, config=None):
     if not os.path.isfile(
         tab_file_gz
     ):  # if we haven't yet downloaded it: cache for next time
-        with closing(urllib.request.urlopen(url_prefix + organism)) as r:
-            with gzip.open(tab_file_gz, mode="wb", compresslevel=9) as f_out:
-                shutil.copyfileobj(r, f_out)
+        try:
+            with closing(urllib.request.urlopen(url_prefix + organism)) as r:
+                with gzip.open(tab_file_gz, mode="wb", compresslevel=9) as f_out:
+                    shutil.copyfileobj(r, f_out)
+        except URLError as e:
+            if "ftp error: error_perm" in str(e.reason):
+                eprint(
+                    "File not found or permission issue when fetching {}: {}".format(
+                        url_prefix + organism, e.reason
+                    )
+                )
+                return None
+            else:
+                eprint("URLError occurred: {}".format(e.reason))
+                return None
+        except Exception as e:
+            eprint(f"An unexpected error occurred: {e}")
+            return None
     return pd.read_csv(
         tab_file_gz, sep="\t", header=None, usecols=[0, 3], names=["gene", "pantherid"]
     )
@@ -36,8 +52,14 @@ def get_panther_df(config=None):
     organisms = set(config["tax2org"].values())
     org2tax = {v: k for k, v in config["tax2org"].items()}
     df = pd.DataFrame(columns=["pantherid", "org", "acc"])
-    for organism in organisms:
+    for organism in sorted(organisms):
+        eprint("Fetching mapping for {}".format(organism))
         org_df = get_panther_seq_classification(organism, config=config)
+        if org_df is None:
+            eprint(
+                "    => ERROR: could not get panther mapping for {}".format(organism)
+            )
+            continue
         org_df = org_df.join(
             org_df["gene"]
             .str.split("|", expand=True)
