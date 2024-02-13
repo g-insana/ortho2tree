@@ -626,7 +626,11 @@ if not config["use_cached_orthogroup_data"]:
         db_conn = dbconnect(config["db_connection"])
     gc_df = get_gc_df(config=config, db_conn=db_conn)
 
-    eprint("Loaded {} canonicals".format(len(gc_df[gc_df["is_canonical"]])))
+    eprint(
+        "Loaded {} gc accessions, of which {} canonicals".format(
+            len(gc_df), len(gc_df[gc_df["is_canonical"]])
+        )
+    )
     eprint(
         "\n*** Part 2.2 workflow completed {} -- Elapsed: {} --\n".format(
             time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
