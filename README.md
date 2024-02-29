@@ -12,6 +12,7 @@ The pipeline can retrieve protein sequences using direct access to the UniProt d
 Data processing is done on DataFrames employing vectorization and all the orthologous groups are processed in parallel.
 
 An overview of the pipeline is shown in this figure:
+![ortho2tree pipeline overview](ortho2tree_pipeline.jpg)
 
 
 # Contents of the repository
