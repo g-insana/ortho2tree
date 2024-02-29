@@ -39,8 +39,42 @@ qfomam           # data for the analsys of 2022_05 data on QfO mammals
 
 ```cd ortho2tree && pip install -r requirements.txt # example installation via pip``` 
 
-## TEST USAGE
+## QUICK TESTS
 - test run of a single group
 ```./ortho2tree.py -set test -id PTRH43715:SF1```
 - full analysis run of a set
-```./ortho2tree.py -set test -id PTRH43715:SF1```
+```./ortho2tree.py -set test -no_stats```
+
+## COMMAND LINE USAGE
+```
+usage: ortho2tree.py [-h] -set DATASET_NAME [-d] [-nocache] [-no_stats]
+                     [-id SINGLE_GROUP [SINGLE_GROUP ...]] [-file LIST_FILENAME]
+                     [-sugg SUGG_FILE] [-prevgc PREVGC_FILE] [-outstamp OUTSTAMP]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -set DATASET_NAME     set for the analysis. a file SET.cfg should be present
+  -d                    print verbose/debug messages
+  -nocache              do not use cache, re-create alignments/trees and do not save them
+  -no_stats             do not print any stats on the dataframe
+  -id SINGLE_GROUP [SINGLE_GROUP ...]
+                        to only work on one or few group(s)
+  -file LIST_FILENAME   to work on a series of groups, from a file
+  -sugg SUGG_FILE       to simulate integration of canonical suggestions reading a previosly
+                        generated changes file; note that file should be placed in the set main dir
+  -prevgc PREVGC_FILE   to integrate previosly generated changes file; note that file should be placed
+                        in the set main dir
+  -outstamp OUTSTAMP    to name and timestamp the output files and the dumps; this overrides the
+                        outstamp parameter from the config
+
+    Examples:
+       -set=qfomam                                 #will do the analysis on the whole set
+       -set=qfomam -id=PTHR19918:SF1               #only for one orthogroup
+       -set=qfomam -id=PTHR19918:SF1 PTHR40139:SF1 #only for two orthogroups
+       -set=qfomam -file=list_of_ids.txt           #for a series of groups listed in a file
+```
+
+## CONFIGRUATION
+
+Please look at the example YAML configuration files provided for the list of the parameters. E.g. 
+[test yaml configuration file](test.cfg)
