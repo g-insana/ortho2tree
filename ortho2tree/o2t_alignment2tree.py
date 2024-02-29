@@ -2,16 +2,18 @@
 # coding: utf-8
 """module providing function alignment2tree() to create a tree from an alignment"""
 import itertools
-import os
 import re
 import sys
-import time
+
+# import os #timing
+# import time #timing
 
 from Bio.Phylo.TreeConstruction import DistanceTreeConstructor, DistanceMatrix
-from .o2t_utils import elapsed_time, eprint
+from .o2t_utils import eprint  # , elapsed_time #timing
 
 # PDIST_CALC = DistanceCalculator("pam30")
 CONSTRUCTOR = DistanceTreeConstructor()
+# Note: uncomment all the code lines marked #timing to perform analyis of pipeline times
 
 
 def _matrixcompare(m1, m2):
@@ -128,7 +130,7 @@ def bt_extract_acc(entry):
 
 
 def alignment2tree(aln, orthoid="", verbose=False, config=None):
-    semaphore_file = os.path.join(config["semaphores_dir"], orthoid + ".done")
+    # semaphore_file = os.path.join(config["semaphores_dir"], orthoid + ".done") #timing
 
     # distance matrix using gap-based distances
     # gdist_ori = PDIST_CALC.get_distance(aln)
@@ -137,25 +139,21 @@ def alignment2tree(aln, orthoid="", verbose=False, config=None):
     #    for jx in range(ix):
     #        gdist_ori.matrix[ix][jx] = bt_gap_dist(aln[ix], aln[jx])
 
-    process_start_time = time.time()
+    # process_start_time = time.time() #timing
     gdist = _get_distance(aln)
-    process_name = "t1"  # getdist new internal code
-    process_duration = time.time() - process_start_time
-    with open(semaphore_file, "a") as fh:
-        fh.write("{}\t{}\n".format(process_name, process_duration))
-    if verbose:
-        eprint("tree (getdist) time: {}".format(elapsed_time(process_start_time)))
+    # process_name = "t1"  # getdist new internal code #timing
+    # process_duration = time.time() - process_start_time #timing
+    # with open(semaphore_file, "a") as fh: #timing
+    #   fh.write("{}\t{}\n".format(process_name, process_duration)) #timing
 
-    process_start_time = time.time()
+    # process_start_time = time.time()
     njtree_g = CONSTRUCTOR.nj(gdist)
-    process_name = "t3"  # constructor
-    process_duration = time.time() - process_start_time
-    with open(semaphore_file, "a") as fh:
-        fh.write("{}\t{}\n".format(process_name, process_duration))
-    if verbose:
-        eprint("tree (constructor) time: {}".format(elapsed_time(process_start_time)))
+    # process_name = "t3"  # constructor #timing
+    # process_duration = time.time() - process_start_time #timing
+    # with open(semaphore_file, "a") as fh: #timing
+    #   fh.write("{}\t{}\n".format(process_name, process_duration)) #timing
 
-    process_start_time = time.time()
+    # process_start_time = time.time() #timing
     try:  # if it fails, it may mean worst_canon_dist = 0
         njtree_g.root_at_midpoint()
     except Exception as e:
@@ -193,11 +191,9 @@ def alignment2tree(aln, orthoid="", verbose=False, config=None):
                 )
             )
             return None
-    process_name = "t4"  # rooting
-    process_duration = time.time() - process_start_time
-    with open(semaphore_file, "a") as fh:
-        fh.write("{}\t{}\n".format(process_name, process_duration))
-    if verbose:
-        eprint("tree (rooting) time: {}".format(elapsed_time(process_start_time)))
+    # process_name = "t4"  # rooting #timing
+    # process_duration = time.time() - process_start_time #timing
+    # with open(semaphore_file, "a") as fh: #timing
+    #   fh.write("{}\t{}\n".format(process_name, process_duration)) #timing
 
     return njtree_g
