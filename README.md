@@ -8,12 +8,16 @@ For unreviewed (UniProtKB/TrEMBL) protein sequences (and for some reviewed seque
 
 The Ortho2tree data pipeline examines Gene-Centric canonical and isoform sequences from sets of orthologous proteins (from PantherDB), builds multiple alignments, constructs gap-distance trees, and identifies low-cost clades of isoforms with similar lengths. Canonical choices can be either confirmed or a better one proposed.
 
-The pipeline can retrieve protein sequences using direct access to the UniProt databases or using the UniProt web API.
-Data processing is done on DataFrames employing vectorization and all the orthologous groups are processed in parallel.
-
 An overview of the pipeline is shown in this figure:
 ![ortho2tree pipeline overview](ortho2tree_pipeline.jpg)
 
+The pipeline can retrieve protein sequences using direct access to the UniProt databases or using the UniProt web API.
+
+Data processing is done on DataFrames employing vectorization and all the orthogroups are processed in parallel:
+- building Multiple Sequence Alignments (via muscle)
+- calculating gap-based Neighbour-Joining trees (via BioPython with a modified pairwise distance function)
+- scanning trees to identify low-cost clades
+- ranking best low-cost clades to confirm existing canonicals or suggest replacements
 
 # Contents of the repository
 ```
