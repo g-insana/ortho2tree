@@ -83,7 +83,7 @@ optional arguments:
 Please look at the example YAML configuration files provided for the list of the parameters. E.g. 
 [test yaml configuration file](test.cfg)
 
-## 2022_05 QfO mammals
+## Analysis of UP2022_05 QfO mammals
 
 To replicate the analysis from the paper:
 ```
