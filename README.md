@@ -87,6 +87,7 @@ Please look at the example YAML configuration files provided for the list of the
 
 To replicate the analysis from the paper:
 ```
-(cd qfomam && tar xfz aln_data.tar.gz) # alignments
+wget https://URLCOMINGSOON/qfomam.tgz
+tar xfz qfomam.tgz
 ./ortho2tree.py -set qfomam
 ```
