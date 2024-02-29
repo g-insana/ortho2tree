@@ -4,7 +4,6 @@
 module providing functions for loading panther and genecentric data
 """
 import os
-import sys
 import gzip
 import shutil
 import pandas as pd
@@ -12,6 +11,9 @@ from .o2t_utils import eprint, download_file
 import urllib.request
 from urllib.error import URLError
 from contextlib import closing
+
+
+GCURL = 'https://SPECIFYGCURL'
 
 
 def get_panther_seq_classification(organism, config=None):
@@ -149,23 +151,12 @@ and not exists (select 1 from sptr.gene_centric_entry gce2 where gce.group_id=gc
     ):  # for faster execution, we cache it
         eprint("Loading genecentric data from file {}".format(genecentric_tabfile))
 
-        if (
-            config["gc_from_sql"] or sys.argv[0].find("pykernel_launcher") != -1
-        ):  # if we saved a dump from a previous sql query
-            gc_df = pd.read_csv(
-                os.path.join(config["dataset_maindir"], genecentric_tabfile),
-                header=0,
-                names=gc_columns,
-                dtype=gc_dtypes,
-            )
-        else:  # if we got a pre-generated file
-            gc_df = pd.read_csv(
-                os.path.join(config["dataset_maindir"], genecentric_tabfile),
-                sep="\t",
-                header=None,
-                names=gc_columns,
-                dtype=gc_dtypes,
-            )
+        gc_df = pd.read_csv(
+            os.path.join(config["dataset_maindir"], genecentric_tabfile),
+            header=0,
+            names=gc_columns,
+            dtype=gc_dtypes,
+        )
     elif config["gc_from_sql"]:
         eprint("executing GC_GROUPS_SQL query")
         gc_df = pd.read_sql_query(GC_GROUPS_SQL, con=db_conn)
@@ -178,7 +169,7 @@ and not exists (select 1 from sptr.gene_centric_entry gce2 where gce.group_id=gc
             compression="gzip",
         )  # cache for next time
     else:  # download pre-generated file
-        url = "https://GITHUBTODO/{}".format(genecentric_tabfile)
+        url = "{}{}".format(GCURL, genecentric_tabfile)
         eprint("Downloading genecentric data from {}".format(url))
         download_file(url, os.path.join(config["dataset_maindir"], genecentric_tabfile))
         gc_df = pd.read_csv(

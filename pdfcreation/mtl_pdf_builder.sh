@@ -57,4 +57,4 @@ fi
 set -u
 set -e
 cd ${set}/
-Rscript --vanilla $BINDIR/multi_draw_nwk_label5gclt.R ${tstamp} ${pdf_data} ${tree_data} ${aln_data} ${lab_data} ${lab_suff} >${set}_multi_draw_gclt.log 2>${set}_multi_draw_gclt.err
+Rscript --vanilla $BINDIR/pdfcreation/multi_draw_nwk_label5gclt.R ${tstamp} ${pdf_data} ${tree_data} ${aln_data} ${lab_data} ${lab_suff} >${set}_multi_draw_gclt.log 2>${set}_multi_draw_gclt.err

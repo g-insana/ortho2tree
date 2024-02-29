@@ -1,6 +1,5 @@
-Bio
-argparse
-numpy
-pandas
-requests
-yaml
+biopython>=1.78
+numpy>=1.23.5
+pandas>=2.0.3
+requests>=2.25.1
+pyyaml
