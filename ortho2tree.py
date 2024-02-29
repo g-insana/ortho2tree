@@ -181,14 +181,14 @@ config["ignore_cache"] = False
 # if we are running in the notebook (ortho2tree.ipynb)
 if sys.argv[0].find("pykernel_launcher") != -1:
     # default set for notebook; override to test other sets
-    config["dataset_name"] = "pln2024_01"
+    config["dataset_name"] = "qfomam"
 else:  # we are running from the shell as ortho2tree.py
     USAGE_EXAMPLE = """
     Examples:
-       -set=5taxa #will do the analysis on the whole set
-       -set=5taxa -id=PTHR19918:SF1               #only for one orthogroup
-       -set=5taxa -id=PTHR19918:SF1 PTHR40139:SF1 #only for two orthogroups
-       -set=mamRS -file=list_of_ids.txt           #for a series of groups listed in a file
+       -set=qfomam                                 #will do the analysis on the whole set
+       -set=qfomam -id=PTHR19918:SF1               #only for one orthogroup
+       -set=qfomam -id=PTHR19918:SF1 PTHR40139:SF1 #only for two orthogroups
+       -set=qfomam -file=list_of_ids.txt           #for a series of groups listed in a file
     """
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter, epilog=USAGE_EXAMPLE
@@ -212,7 +212,7 @@ else:  # we are running from the shell as ortho2tree.py
         dest="ignore_cache",
         required=False,
         action="store_true",
-        help="do not use cache, re-create aln/trees and do not save them",
+        help="do not use cache, re-create alignments/trees and do not save them",
     )
     parser.add_argument(
         "-no_stats",
@@ -241,14 +241,14 @@ else:  # we are running from the shell as ortho2tree.py
         dest="sugg_file",
         required=False,
         type=str,
-        help="to simulate integration of canonical suggestions reading a previosly generated changes file; note file should be placed in the set main dir",
+        help="to simulate integration of canonical suggestions reading a previosly generated changes file; note that file should be placed in the set main dir",
     )
     parser.add_argument(
         "-prevgc",
         dest="prevgc_file",
         required=False,
         type=str,
-        help="to integrate previosly generated changes file; note file should be placed in the set main dir",
+        help="to integrate previosly generated changes file; note that file should be placed in the set main dir",
     )
     parser.add_argument(
         "-outstamp",
@@ -397,6 +397,7 @@ paths_to_join = [
     "prevgc_notfound_file",
     "prevgc_conflict_file",
     "groups_by_taxa_count_file",
+    "groups_by_entry_count_file",
     "low_taxa_groups_file",
     "orthogroup_df_cachefile",
     "tr_fragments_df_cachefile",
