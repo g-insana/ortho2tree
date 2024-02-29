@@ -39,6 +39,8 @@ qfomam           # data for the analsys of 2022_05 data on QfO mammals
 
 ```cd ortho2tree && pip install -r requirements.txt # example installation via pip``` 
 
-## USAGE
-- test run of a single group 
-- full analysis run of a set 
+## TEST USAGE
+- test run of a single group
+```./ortho2tree.py -set test -id PTRH43715:SF1```
+- full analysis run of a set
+```./ortho2tree.py -set test -id PTRH43715:SF1```
