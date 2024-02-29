@@ -16,14 +16,17 @@ import yaml  # for configuration files
 from multiprocessing import Pool, cpu_count, current_process, set_start_method
 from platform import platform
 
-
-from o2t_buildtree import build_tree_for_orthogroup
-from o2t_df import create_ortho_df, ortho_df_stats, read_ortho_df
-from o2t_gc_integration import dump_prev_changes
-from o2t_load import get_gc_df, get_panther_df
-from o2t_output import clean_up_tempfiles, combine_and_print_output, output_headers
-from o2t_scan_ndata import scan_ndata_file
-from o2t_utils import (
+from ortho2tree.o2t_buildtree import build_tree_for_orthogroup
+from ortho2tree.o2t_df import create_ortho_df, ortho_df_stats, read_ortho_df
+from ortho2tree.o2t_gc_integration import dump_prev_changes
+from ortho2tree.o2t_load import get_gc_df, get_panther_df
+from ortho2tree.o2t_output import (
+    clean_up_tempfiles,
+    combine_and_print_output,
+    output_headers,
+)
+from ortho2tree.o2t_scan_ndata import scan_ndata_file
+from ortho2tree.o2t_utils import (
     check_all_files_exist,
     elapsed_time,
     eprint,
@@ -334,7 +337,7 @@ for key in file_keys:
 
 
 # output intermediate files:
-config["output_keys"] = ["gc", "changes", "confirm", "skipped", "conflict"]
+config["output_keys"] = ["conflict", "changes", "confirm", "skipped", "gc"]
 for key in config["output_keys"]:
     config[key + "_outfile"] = "output_" + key + config["outstamp"]
 
@@ -506,11 +509,12 @@ def get_sequences_wrapper(config={}):
     wrapper to have get_sequences appropriate to current setup (via db or via web api)
     """
 
-    def _wrapper(accessions, orthoid="", format="Dict", config=config):
-        if config["seq_from_sql"]:  # get sequences via database access
-            if config["use_uniparc_for_seq_retrieval"]:
-                db_conn = dbconnect(config["db_connection_uniparc"])
-                eprint("We will retrieve sequences using UNIPARC database")
+    if config["seq_from_sql"]:  # get sequences via database access
+        if config["use_uniparc_for_seq_retrieval"]:
+            db_conn = dbconnect(config["db_connection_uniparc"])
+            eprint("We will retrieve sequences using UNIPARC database")
+
+            def _wrapper(accessions, orthoid="", format="Dict", config=config):
                 return get_sequences_db(
                     accessions,
                     orthoid=orthoid,
@@ -518,9 +522,12 @@ def get_sequences_wrapper(config={}):
                     config=config,
                     db_conn=db_conn,
                 )
-            else:  # use swpread
-                db_conn = dbconnect(config["db_connection"])
-                eprint("We will retrieve sequences using SWPREAD database")
+
+        else:  # use swpread
+            db_conn = dbconnect(config["db_connection"])
+            eprint("We will retrieve sequences using SWPREAD database")
+
+            def _wrapper(accessions, orthoid="", format="Dict", config=config):
                 return get_sequences_db(
                     accessions,
                     orthoid=orthoid,
@@ -528,8 +535,11 @@ def get_sequences_wrapper(config={}):
                     config=config,
                     db_conn=db_conn,
                 )
-        else:  # get sequences via online API retrieval
-            eprint("We will retrieve sequences using WEB API")
+
+    else:  # get sequences via online API retrieval
+        eprint("We will retrieve sequences using WEB API")
+
+        def _wrapper(accessions, orthoid="", format="Dict", config=config):
             return get_sequences_web(
                 accessions, orthoid=orthoid, format=format, config=config
             )
