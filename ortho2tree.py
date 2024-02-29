@@ -31,7 +31,8 @@ from ortho2tree.o2t_utils import (
     elapsed_time,
     eprint,
     get_orthologs_df_from_pantherid,
-    get_sequences_db,
+    get_sequences_uniparc,
+    get_sequences_swpread,
     get_sequences_web,
 )
 
@@ -59,6 +60,14 @@ try:
 except ImportError:
     sys.stderr.write("NOTICE: Oracle module not available\n")
 
+# optional, for connection engine
+sqlalchemy_available = True
+try:
+    import sqlalchemy
+except ImportError:
+    sqlalchemy_available = False
+    sys.stderr.write("NOTICE: sqlalchemy module not available\n")
+
 
 # ## Part 1) Configuration and setup
 
@@ -69,6 +78,7 @@ except ImportError:
 config = {
     "threads": 7,  # how many parallel threads?
     "progressbar": True,  # show tqdm progressbar (if tqdm module is present)
+    "print_stats": True,  # print statistics about the df
     # # # DB, API and Files options # # #
     "gc_from_sql": True,  # use oracle db sql query for gc groups? (if false, get data from tsv file)
     "seq_from_sql": True,  # use oracle db sql queries to retrieve sequences? (if false, get data via protein API)
@@ -205,6 +215,13 @@ else:  # we are running from the shell as ortho2tree.py
         help="do not use cache, re-create aln/trees and do not save them",
     )
     parser.add_argument(
+        "-no_stats",
+        dest="no_stats",
+        required=False,
+        action="store_true",
+        help="do not print any stats on the dataframe",
+    )
+    parser.add_argument(
         "-id",
         dest="single_group",
         required=False,
@@ -295,6 +312,8 @@ if os.path.isfile(dataset_configfile):
 if sys.argv[0].find("pykernel_launcher") == -1:
     if args.outstamp is not None:
         config["outstamp"] = args.outstamp
+    if args.no_stats:
+        config["print_stats"] = False
 else:  # we are in jupyter
     if sys.version_info >= (3, 8, 10) and platform().find("macOS") != -1:
         eprint(
@@ -320,6 +339,7 @@ file_keys = [
     "prevgc_notfound_file",  # entries no more present in gc but that were previous gc suggestions
     "prevgc_conflict_file",  # conflicting suggestions being removed
     "groups_by_taxa_count_file",  # list of groups and their sizes in number of taxa
+    "groups_by_entry_count_file",  # list of groups and their sizes in number of entries, excluding lowtaxa and outliers
     "low_taxa_groups_file",  # list of groups with taxa size lower than threshold
     "tr_fragments_df_cachefile",
     "tr_fragments_df_dumpfile",  # to read or write trembl fragments
@@ -511,35 +531,83 @@ def get_sequences_wrapper(config={}):
 
     if config["seq_from_sql"]:  # get sequences via database access
         if config["use_uniparc_for_seq_retrieval"]:
-            db_conn = dbconnect(config["db_connection_uniparc"])
-            eprint("We will retrieve sequences using UNIPARC database")
+            db_connection_details = config["db_connection_uniparc"]
+            get_sequences_db_function = get_sequences_uniparc
+            db_database_name = "UNIPARC"
+        else:
+            db_connection_details = config["db_connection"]
+            get_sequences_db_function = get_sequences_swpread
+            db_database_name = "SWPREAD"
 
-            def _wrapper(accessions, orthoid="", format="Dict", config=config):
-                return get_sequences_db(
-                    accessions,
-                    orthoid=orthoid,
-                    format=format,
-                    config=config,
-                    db_conn=db_conn,
+        if sqlalchemy_available:
+            eprint(
+                "We will retrieve sequences using {} database via sqlalchemy".format(
+                    db_database_name
                 )
+            )
+            engine = sqlalchemy.create_engine(
+                "oracle+cx_oracle://{}".format(db_connection_details.replace("/", ":")),
+                pool_size=config["threads"],
+                max_overflow=2,
+            )
 
-        else:  # use swpread
-            db_conn = dbconnect(config["db_connection"])
-            eprint("We will retrieve sequences using SWPREAD database")
+            def _wrapper(accessions, orthoid="", format="Dict", config={}):
+                try:
+                    db_conn = engine.pool.connect()
+                    return get_sequences_db_function(
+                        accessions,
+                        orthoid=orthoid,
+                        format=format,
+                        config=config,
+                        db_conn=db_conn.driver_connection,
+                    )
+                except Exception as e:
+                    eprint("ERROR fetching sequences: {}".format(e))
+                finally:
+                    db_conn.close()
 
-            def _wrapper(accessions, orthoid="", format="Dict", config=config):
-                return get_sequences_db(
-                    accessions,
-                    orthoid=orthoid,
-                    format=format,
-                    config=config,
-                    db_conn=db_conn,
+        else:
+            eprint(
+                "We will retrieve sequences using {} database via cx_Oracle".format(
+                    db_database_name
                 )
+            )
+
+            db_user, db_tmp = db_connection_details.split("/", 1)
+            db_pwd, db_name = db_tmp.split("@", 1)
+            oracle_pool = cx_Oracle.SessionPool(
+                user=db_user,
+                password=db_pwd,
+                dsn=db_name,
+                min=1,
+                max=config["threads"] + 2,
+            )
+            db_conn = oracle_pool.acquire()
+            oracle_pool.release(db_conn)
+
+            def _wrapper(accessions, orthoid="", format="Dict", config={}):
+                try:
+                    db_conn = oracle_pool.acquire()
+                    return get_sequences_uniparc(
+                        accessions,
+                        orthoid=orthoid,
+                        format=format,
+                        config=config,
+                        db_conn=db_conn,
+                    )
+                except cx_Oracle.DatabaseError as exc:
+                    err = exc.args
+                    eprint("Oracle-Error-Code:", err.code)
+                    eprint("Oracle-Error-Message:", err.message)
+                except Exception as e:
+                    eprint("ERROR fetching sequences: {}".format(e))
+                finally:
+                    oracle_pool.release(db_conn)
 
     else:  # get sequences via online API retrieval
         eprint("We will retrieve sequences using WEB API")
 
-        def _wrapper(accessions, orthoid="", format="Dict", config=config):
+        def _wrapper(accessions, orthoid="", format="Dict", config={}):
             return get_sequences_web(
                 accessions, orthoid=orthoid, format=format, config=config
             )
@@ -665,7 +733,7 @@ else:
     del panther_df
     del gc_df
 
-if len(config["groups2run"]) == 0:
+if len(config["groups2run"]) == 0:  # unless we are doing single groups
     # print stats and filter out groups lower than min_taxa
     ortho_df = ortho_df_stats(ortho_df, config=config)
 
