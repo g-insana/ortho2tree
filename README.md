@@ -94,8 +94,11 @@ A web interface for filtering and viewing the pdf files with the trees from the 
 To replicate the analysis from the paper:
 ```
 wget https://URLCOMINGSOON/qfomam.tgz                 #retrieve the archive
+wget https://URLCOMINGSOON/qfomam.cfg                 #retrieve the configuration file
 tar xfz qfomam.tgz                                    #uncompress the archive
 ./ortho2tree.py -set qfomam -id PTRH43715:SF1         #run a single orthogroup
 ./ortho2tree.py -set qfomam -outstamp $(date +%y%m%d) #do the analysis
 ```
-The archive contains pre-computed alignments, trees and clades.
+The archive [https://URLCOMINGSOON/qfomam.tgz](https://URLCOMINGSOON/qfomam.tgz) contains pre-computed alignments, trees and clades.
+
+The pdf_data for all the trees where canonicals were confirmed or changes were proposed is available as a separate archive: [https://URLCOMINGSOON/qfomam_pdf_data.tgz](wget https://URLCOMINGSOON/qfomam_pdf_data.tgz)
