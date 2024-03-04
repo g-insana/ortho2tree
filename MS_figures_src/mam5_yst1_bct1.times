@@ -1,0 +1,7 @@
+human_v_gorgo	8.6	rod	mammal
+mouse_v_rat	15	rod	mammal
+human_v_mouse	87	mam	mammal
+human_v_rat	87	mam	mammal
+human_v_bovin	94	mam	mammal
+yeast_v_sacar	14	yst	yeast
+ecoli_v_salty	120	bct	bacteria
