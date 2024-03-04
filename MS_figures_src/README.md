@@ -2,7 +2,7 @@
 
 (3-March-2024)
 
-This archive contains all of the datafiles and .R code to recreate the figures in the manuscript: 
+This folder contains all of the datafiles and .R code to recreate the figures in the manuscript: 
 *Improved selection of canonical proteins for reference proteomes*.
 
 To recreate pdf files for the figures, run: `plot_MS_pub.sh`
