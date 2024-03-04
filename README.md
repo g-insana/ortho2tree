@@ -112,3 +112,7 @@ The [Zenodo](https://doi.org/10.5281/zenodo.10778115) archive [qfomam.tgz](https
 
 The pdf files generated with trees and alignments for each orthogroup where canonicals were confirmed or changes were proposed is available as a separate Zenodo archive: [qfomam_pdf_data.tgz](https://zenodo.org/records/10778115/files/qfomam_pdf_data.tar.gz?download=1) (Also available from [Figshare](https://figshare.com/ndownloader/files/44836390).
 
+## LINKS
+
+[Zenodo resource](https://zenodo.org/records/10778115)
+[FigShare project](https://figshare.com/projects/ortho2tree/197614)
