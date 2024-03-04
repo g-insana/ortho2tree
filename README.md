@@ -26,9 +26,9 @@ ortho2tree.ipynb # jupyter notebook to run the pipeline interactively
 ortho2tree/      # modules folder
 requirements.txt # list of needed packages
 README.md        # this text
+MS_figures_src/  # all of the datafiles and .R code to recreate the figures in the manuscript
 test/            # folder containing data ready for a test run
 test.cfg         # configuration file for a test run
-qfomam           # data for the analsys of 2022_05 data on QfO mammals
 ```
 
 ## INSTALLATION
