@@ -27,8 +27,8 @@ ortho2tree/      # modules folder
 requirements.txt # list of needed packages
 README.md        # this text
 MS_figures_src/  # all of the datafiles and .R code to recreate the figures in the manuscript
-test/            # folder containing data ready for a test run
-test.cfg         # configuration file for a test run
+test/            # folder containing data ready for a quick test run
+test.cfg         # configuration file for the quick test run
 ```
 
 ## INSTALLATION
@@ -40,12 +40,12 @@ test.cfg         # configuration file for a test run
 
 ```cd ortho2tree && pip install -r requirements.txt # example installation via pip``` 
 
-## QUICK TESTS
+## QUICK TEST
 - test run of a single group
 
 ```./ortho2tree.py -set test -id PTRH43715:SF1```
 
-- full analysis run of a set
+- example of full analysis run of a set
 
 ```./ortho2tree.py -set test -no_stats```
 
@@ -85,9 +85,17 @@ Please look at the example YAML configuration files provided for the list of the
 
 ## Analysis of UP2022_05 QfO mammals
 
+(presented in the paper *Improved selection of canonical proteins for reference proteomes*)
+
+See the folder [MS_figures_src](MS_figures_src) for datafiles and .R code to recreate the figures in the manuscript
+
+A web interface for filtering and viewing the pdf files with the trees from the result of that analysis (and subsequent ones) is available at [fasta.bioch.virginia.edu/ortho2tree](https://fasta.bioch.virginia.edu/ortho2tree)
+
 To replicate the analysis from the paper:
 ```
-wget https://URLCOMINGSOON/qfomam.tgz
-tar xfz qfomam.tgz
-./ortho2tree.py -set qfomam
+wget https://URLCOMINGSOON/qfomam.tgz                 #retrieve the archive
+tar xfz qfomam.tgz                                    #uncompress the archive
+./ortho2tree.py -set qfomam -id PTRH43715:SF1         #run a single orthogroup
+./ortho2tree.py -set qfomam -outstamp $(date +%y%m%d) #do the analysis
 ```
+The archive contains pre-computed alignments, trees and clades.
