@@ -36,14 +36,24 @@ test.cfg         # configuration file for the quick test run
 
 ```git clone https://github.com/g-insana/ortho2tree.git``` 
 
-- install requirements (via conda/mamba or via pip): 
+- install requirements (virtual environment is optional but recommended):
 
-```cd ortho2tree && pip install -r requirements.txt # example installation via pip``` 
+e.g. via pip
+```
+cd ortho2tree && python3 -m venv venv_o2t
+source venv_o2t/bin/activate
+pip3 install -r requirements.txt
+```
+e.g. via conda or mamba:
+```
+cd ortho2tree && mamba create --name ortho2tree --file requirements.txt --channel conda-forge
+mamba activate ortho2tree
+```
 
-## QUICK TEST
+## QUICK TEST TO CHECK INSTALLATION
 - test run of a single group
 
-```./ortho2tree.py -set test -id PTRH43715:SF1```
+```./ortho2tree.py -set test -id PTHR43715:SF1```
 
 - example of full analysis run of a set
 
