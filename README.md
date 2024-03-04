@@ -84,8 +84,7 @@ Please look at the example YAML configuration files provided for the list of the
 [test yaml configuration file](test.cfg)
 
 ## Analysis of UP2022_05 QfO mammals
-
-(presented in the paper *Improved selection of canonical proteins for reference proteomes*)
+The `ortho2tree` analysis described in the manuscript "Improved selection of canonical proteins for reference proteomes" of eight QfO ([Quest for Orthologs](https://questfororthologs.org/)) mammal proteomes, based on [UniProtKB](https://www.uniprot.org/) data (release UP2022_05).
 
 See the folder [MS_figures_src](MS_figures_src) for datafiles and .R code to recreate the figures in the manuscript
 
