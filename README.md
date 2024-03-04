@@ -114,5 +114,5 @@ The pdf files generated with trees and alignments for each orthogroup where cano
 
 ## LINKS
 
-[Zenodo resource](https://zenodo.org/records/10778115)
-[FigShare project](https://figshare.com/projects/ortho2tree/197614)
+- [Zenodo resource](https://zenodo.org/records/10778115)
+- [FigShare project](https://figshare.com/projects/ortho2tree/197614)
