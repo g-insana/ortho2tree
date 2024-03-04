@@ -29,6 +29,7 @@ README.md        # this text
 MS_figures_src/  # all of the datafiles and .R code to recreate the figures in the manuscript
 test/            # folder containing data ready for a quick test run
 test.cfg         # configuration file for the quick test run
+qfomam.cfg       # configuration file for the qfomam2022_05 analysis described in the manuscript
 ```
 
 ## INSTALLATION
