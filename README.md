@@ -108,5 +108,7 @@ tar xfz qfomam.tgz                                               #uncompress the
 ./ortho2tree.py -set qfomam -outstamp $(date +%y%m%d)            #do the analysis
 ```
 The [Zenodo](https://doi.org/10.5281/zenodo.10778115) archive [qfomam.tgz](https://zenodo.org/records/10778115/files/qfomam.tar.gz?download=1) contains pre-computed alignments, trees and clades.
+Also available from [Figshare](https://figshare.com/ndownloader/files/44836240).
 
-The pdf files generated with trees and alignments for each orthogroup where canonicals were confirmed or changes were proposed is available as a separate Zenodo archive: [qfomam_pdf_data.tgz](https://zenodo.org/records/10778115/files/qfomam_pdf_data.tar.gz?download=1)
+The pdf files generated with trees and alignments for each orthogroup where canonicals were confirmed or changes were proposed is available as a separate Zenodo archive: [qfomam_pdf_data.tgz](https://zenodo.org/records/10778115/files/qfomam_pdf_data.tar.gz?download=1). Also available from [Figshare](https://figshare.com/ndownloader/files/44836390).
+
