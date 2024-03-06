@@ -94,6 +94,10 @@ optional arguments:
 Please look at the example YAML configuration files provided for the list of the parameters. E.g. 
 [test yaml configuration file](test.cfg)
 
+## DOCUMENTATION
+
+Please refer to the [DOCS.md](DOCS.md) file for information on how to setup a new analysis and how to interpret the output produced.
+
 ## Analysis of UP2022_05 QfO mammals
 The `ortho2tree` analysis described in the manuscript "Improved selection of canonical proteins for reference proteomes" of eight QfO ([Quest for Orthologs](https://questfororthologs.org/)) mammal proteomes, based on [UniProtKB](https://www.uniprot.org/) data (release UP2022_05).
 
