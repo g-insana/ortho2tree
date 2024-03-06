@@ -79,7 +79,7 @@ Each proposed change is in a line with the following tab-separated fields:
 
 ```
 pthr_id           Panther orthogroup identifier
-taxon             organism identifier as (OSCODE)[https://ftp.uniprot.org/pub/databases/uniprot/knowledgebase/complete/docs/speclist.txt]
+taxon             organism identifier as OSCODE (*)
 canon_acc         UniProtKB accession of the current canonical (sp: reviewed, tr: unreviewed)
 canon_len         sequence length of the current canonical
 prop_acc          UniProtKB accession of the proposed change (sp: reviewed, tr: unreviewed)
@@ -98,6 +98,7 @@ clade             name of the clade from the Neighbour-Joining tree
 clade_members     all the members of the clade (comma separated list of OSCODE:ACCESSION identifiers)
 MANEstatus        agreement of clade with MANE (if human in analysis): MANE_good, MANE_bad, NAM (orthogroup clade has no HUMAN sequence, so no MANE assignment)
 ```
+(*): [OSCODE](https://ftp.uniprot.org/pub/databases/uniprot/knowledgebase/complete/docs/speclist.txt)
 
 ## FORMAT OF `output_confirmyymmdd` (`output_confirm` + `yymmdd` timestamp):
 
