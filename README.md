@@ -2,20 +2,22 @@
 
 The [UniProt](https://www.uniprot.org) [Reference Proteomes dataset](https://www.uniprot.org/help/reference_proteome) seeks to provide complete proteomes for an evolutionarily diverse, less redundant, set of organisms. 
 
-As higher eukaryotes often encode multiple isoforms of a protein from a single gene, the Reference Proteome pipeline selects a single representative (‘canonical’) sequence. UniProt identifies canonical isoforms using a ‘Gene-Centric’ approach: proteins are grouped by gene-identifier and for each gene a single protein sequence is chosen. 
+As higher eukaryotes often encode multiple isoforms of a protein from a single gene, the Reference Proteome pipeline selects a single representative (‘canonical’) sequence. UniProt identifies canonical isoforms using a ‘[Gene-Centric](https://www.uniprot.org/help/gene_centric_isoform_mapping)’ approach: proteins are grouped by gene-identifier and for each gene a single protein sequence is chosen. 
 
 For unreviewed (UniProtKB/TrEMBL) protein sequences (and for some reviewed sequences), the longest sequence in the Gene-Centric group is usually chosen as canonical. This can create inconsistencies, selecting canonical sequences with dramatically different lengths for orthologous genes.
 
-The Ortho2tree data pipeline examines Gene-Centric canonical and isoform sequences from sets of orthologous proteins (from PantherDB), builds multiple alignments, constructs gap-distance trees, and identifies low-cost clades of isoforms with similar lengths. Canonical choices can be either confirmed or a better one proposed.
+The Ortho2tree data pipeline examines Gene-Centric canonical and isoform sequences from sets of orthologous proteins (from [PantherDB](https://www.pantherdb.org/)), builds multiple alignments, constructs gap-distance trees, and identifies low-cost clades of isoforms with similar lengths. Canonical choices can be either confirmed or a better one proposed.
+
+The pipeline and the underlying analysis is described in the manuscript *"Improved selection of canonical proteins for reference proteomes"*, whose pre-print is [available at BioRxiv](https://doi.org/10.1101/2024.03.04.583387).
 
 An overview of the pipeline is shown in this figure:
 ![ortho2tree pipeline overview](ortho2tree_pipeline.jpg)
 
-The pipeline can retrieve protein sequences using direct access to the UniProt databases or using the UniProt web API.
+The pipeline can retrieve protein sequences using direct access to the [UniProt](https://www.uniprot.org) databases or using the [UniProt web API](https://www.ebi.ac.uk/proteins/api/doc/).
 
 Data processing is done on DataFrames employing vectorization and all the orthogroups are processed in parallel:
-- building Multiple Sequence Alignments (via muscle)
-- calculating gap-based Neighbour-Joining trees (via BioPython with a modified pairwise distance function)
+- building Multiple Sequence Alignments (via [muscle](https://drive5.com/muscle/))
+- calculating gap-based Neighbour-Joining trees (via [BioPython](https://biopython.org/) with a modified pairwise distance function)
 - scanning trees to identify low-cost clades
 - ranking best low-cost clades to confirm existing canonicals or suggest replacements
 
@@ -50,6 +52,8 @@ e.g. via conda or mamba:
 cd ortho2tree && mamba create --name ortho2tree --file requirements.txt --channel conda-forge
 mamba activate ortho2tree
 ```
+
+**Note** that you also need to install `muscle` for multiple sequence alignments, either version v3.8.31 or the new 5.1. Please check ortho2tree/config_muscle.py and update accordingly to your installation so that the muscle executable can be found and the correct format is set (according to the muscle version).
 
 ## QUICK TEST TO CHECK INSTALLATION
 - test run of a single group
@@ -121,3 +125,4 @@ The pdf files generated with trees and alignments for each orthogroup where cano
 
 - [Zenodo resource](https://zenodo.org/records/10778115)
 - [FigShare project](https://figshare.com/projects/ortho2tree/197614)
+- [BioRxiv preprint](https://doi.org/10.1101/2024.03.04.583387)
