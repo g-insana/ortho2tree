@@ -15,11 +15,12 @@ An overview of the pipeline is shown in this figure:
 
 The pipeline can retrieve protein sequences using direct access to the [UniProt](https://www.uniprot.org) databases or using the [UniProt web API](https://www.ebi.ac.uk/proteins/api/doc/).
 
-Data processing is done on DataFrames employing vectorization and all the orthogroups are processed in parallel:
-- building Multiple Sequence Alignments (via [muscle](https://drive5.com/muscle/))
-- calculating gap-based Neighbour-Joining trees (via [BioPython](https://biopython.org/) with a modified pairwise distance function)
-- scanning trees to identify low-cost clades
-- ranking best low-cost clades to confirm existing canonicals or suggest replacements
+Data processing is done via [pandas](https://pandas.pydata.org/) DataFrames employing vectorized operations and all the orthogroups can be processed in parallel if multithread is available.
+For each orthogroup the pipeline:
+- builds a Multiple Sequence Alignment (via [muscle](https://drive5.com/muscle/))
+- calculates a gap-based Neighbour-Joining tree (via [BioPython](https://biopython.org/) using a modified pairwise distance function focused on gaps)
+- scans the tree to identify low-cost clades
+- ranks the best low-cost clades to confirm existing canonicals or suggest replacements
 
 # Contents of the repository
 ```
