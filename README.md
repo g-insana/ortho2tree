@@ -96,7 +96,7 @@ optional arguments:
 
 ## CONFIGURATION
 
-Please look at the example YAML configuration files provided for the list of the parameters. E.g. 
+Please check the the example YAML configuration files provided for the list of the parameters. E.g. 
 [test yaml configuration file](test.cfg)
 
 ## DOCUMENTATION
@@ -104,11 +104,9 @@ Please look at the example YAML configuration files provided for the list of the
 Please refer to the [DOCS.md](DOCS.md) file for information on how to setup a new analysis and how to interpret the output produced.
 
 ## Analysis of UP2022_05 QfO mammals
-The `ortho2tree` analysis described in the manuscript "Improved selection of canonical proteins for reference proteomes" of eight QfO ([Quest for Orthologs](https://questfororthologs.org/)) mammal proteomes, based on [UniProtKB](https://www.uniprot.org/) data (release UP2022_05).
+The manuscript *"Improved selection of canonical proteins for reference proteomes"* ([preprint](https://doi.org/10.1101/2024.03.04.583387)) describes the `ortho2tree` analysis of eight QfO ([Quest for Orthologs](https://questfororthologs.org/)) mammalian proteomes, based on [UniProtKB](https://www.uniprot.org/) data (release UP2022_05).
 
 See the folder [MS_figures_src](MS_figures_src) for datafiles and .R code to recreate the figures in the manuscript
-
-A web interface for filtering and viewing the pdf files with the trees from the result of that analysis (and subsequent ones) is available at [fasta.bioch.virginia.edu/ortho2tree](https://fasta.bioch.virginia.edu/ortho2tree)
 
 To replicate the analysis from the paper:
 ```
@@ -118,9 +116,13 @@ tar xfz qfomam.tgz                                               #uncompress the
 ./ortho2tree.py -set qfomam -outstamp $(date +%y%m%d)            #do the analysis
 ```
 The [Zenodo](https://doi.org/10.5281/zenodo.10778115) archive [qfomam.tgz](https://zenodo.org/records/10778115/files/qfomam.tar.gz?download=1) contains pre-computed alignments, trees and clades
-(Also available from [Figshare](https://figshare.com/ndownloader/files/44836240)).
+(or alternatively from [Figshare](https://figshare.com/ndownloader/files/44836240)).
 
-The pdf files generated with trees and alignments for each orthogroup where canonicals were confirmed or changes were proposed is available as a separate Zenodo archive: [qfomam_pdf_data.tgz](https://zenodo.org/records/10778115/files/qfomam_pdf_data.tar.gz?download=1) (Also available from [Figshare](https://figshare.com/ndownloader/files/44836390).
+A web interface for filtering and viewing the pdf files (with trees and alignments for each orthogroup) from the result of that analysis (and subsequent ones) is available at [fasta.bioch.virginia.edu/ortho2tree](https://fasta.bioch.virginia.edu/ortho2tree)
+
+The pdf files, generated whenever canonicals were confirmed or changes were proposed, are available as a Zenodo archive: [qfomam_pdf_data.tgz](https://zenodo.org/records/10778115/files/qfomam_pdf_data.tar.gz?download=1) (or alternatively from [Figshare](https://figshare.com/ndownloader/files/44836390)).
+
+A script to generate the pdf tiles is included under the folder [pdfcreation/](pdfcreation/)
 
 ## LINKS
 
