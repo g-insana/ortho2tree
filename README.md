@@ -122,7 +122,7 @@ A web interface for filtering and viewing the pdf files (with trees and alignmen
 
 The pdf files, generated whenever canonicals were confirmed or changes were proposed, are available as a Zenodo archive: [qfomam_pdf_data.tgz](https://zenodo.org/records/10778115/files/qfomam_pdf_data.tar.gz?download=1) (or alternatively from [Figshare](https://figshare.com/ndownloader/files/44836390)).
 
-A script to generate the pdf tiles is included under the folder [pdfcreation/](pdfcreation/)
+A script to generate the pdf files is included under the folder [pdfcreation/](pdfcreation/)
 
 ## LINKS
 
