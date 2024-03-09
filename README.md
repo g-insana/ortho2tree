@@ -40,15 +40,15 @@ qfomam.cfg       # configuration file for the qfomam2022_05 analysis described i
 
 ```git clone https://github.com/g-insana/ortho2tree.git``` 
 
-- install requirements (virtual environment is optional but recommended):
+- install requirements (virtual environment is optional but recommended) via pip or conda/mamba:
 
-e.g. via pip
+via pip:
 ```
 cd ortho2tree && python3 -m venv venv_o2t
 source venv_o2t/bin/activate
 pip3 install -r requirements.txt
 ```
-e.g. via conda or mamba:
+via conda or mamba:
 ```
 cd ortho2tree && mamba create --name ortho2tree --file requirements.txt --channel conda-forge
 mamba activate ortho2tree
@@ -58,7 +58,10 @@ mamba activate ortho2tree
 
 e.g. via conda or mamba for 3.8.31:
 ```
-mamba install -c bioconda "muscle<=4.0"
+#EITHER:
+mamba install -c bioconda "muscle<=4.0" #3.8.31
+#OR:
+mamba install -c bioconda 'muscle>=5.0' #5.1
 ```
 
 ## QUICK TEST TO CHECK INSTALLATION
