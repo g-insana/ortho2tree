@@ -56,6 +56,11 @@ mamba activate ortho2tree
 
 **Note** that you also need to install `muscle` for multiple sequence alignments, either version [v3.8.31](https://drive5.com/muscle/downloads_v3.htm) or the new [v5.1](https://github.com/rcedgar/muscle/releases/tag/5.1.0). Please check ortho2tree/config_muscle.py and update accordingly to your installation so that the muscle executable can be found and the correct format is set (according to the muscle version used).
 
+e.g. via conda or mamba for 3.8.31:
+```
+mamba install -c bioconda "muscle<=4.0"
+```
+
 ## QUICK TEST TO CHECK INSTALLATION
 - test run of a single group
 
