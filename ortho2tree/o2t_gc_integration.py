@@ -44,7 +44,8 @@ def check_suggestion_against_prev(
     1) if new_sugg and prev_sugg are same, prev_sugg will be printed
     2) if new_sugg contains a "flip flop", i.e. a pair where we suggest A->B where prev_sugg had "B->A",
        prev_sugg will be printed and new_sugg ignored
-      2.2) UNLESS 'allow_flipflop' config parameter is set
+    2.2) UNLESS 'allow_flipflop_before' config parameter is set and the previous suggestion is older
+         than the release specified there; in that case, fallback to case 3 (treat as novel and conflicting)
     3) if new_sugg contains a novel suggestion for the same panther_id and same taxon involving one of the accessions from prev_sugg (e.g. B->C),
        then the suggestion "A->B" from prev_sugg is removed and the new one is printed instead
     4-5) otherwise they don't conflict and they both get printed (e.g. different clade even if same taxon)
@@ -90,13 +91,17 @@ def check_suggestion_against_prev(
                     (prevgc_sugg_taxon["oldcanon"] == p_acc)
                     & (prevgc_sugg_taxon["replacement"] == canon_acc)
                 ]["release"].values[0]
-                allow_flipflop = config.get("allow_flipflop", False)
-                if allow_flipflop:
+                allow_flipflop_before = config.get("allow_flipflop_before", False)
+                if allow_flipflop_before and prevsugg_release < allow_flipflop_before:
                     # case 2.2 == case 3: new_sugg not considered a flip flop and instead old suggestion is removed
                     if verbose:
                         eprint(
-                            "INT allowed flip flop: {}->{} [{}], removing prev_gc from {}".format(
-                                canon_acc, p_acc, orthoid, prevsugg_release
+                            "INT allowed flip flop: {}->{} [{}], removing prev_gc from {}: older than {}".format(
+                                canon_acc,
+                                p_acc,
+                                orthoid,
+                                prevsugg_release,
+                                allow_flipflop_before,
                             )
                         )
                     prevgc_df.loc[prevgc_match.index, "conflict"] = True
@@ -160,8 +165,8 @@ def check_suggestion_against_prev(
             # case 5: the new_sugg is printed:
             # it's either totally new, because for this orthoid+taxon there was no prev_sugg OR
             # there were conflicting suggestions but they had a different (old/previous) orthoid assignment (case 6)
-            if verbose:
-                eprint("INT new_sugg {} [{}]".format(canon_acc, orthoid))
+            # if verbose:
+            #   eprint("INT new_sugg {} [{}]".format(canon_acc, orthoid))
             return True, ""
         else:
             # case 6: if there is/are suggestion(s) mentioning one of canon_acc or p_acc

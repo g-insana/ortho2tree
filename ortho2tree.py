@@ -162,7 +162,7 @@ config = {
     # # # GCINTEGRATION # # #
     "sugg_file": False,  # if a filename is specified, it will be read to simulate genecentric application of ortho2tree using previously created suggestions
     "prevgc_file": False,  # if a filename is specified, it will be read and used for cumulative integrated changes for genecentric pipeline
-    "allow_flipflop": False,  # allow suggestions that represent a flip flop (reverting a previously made suggestion)?
+    "allow_flipflop_before": "",  # if set (e.g. '2023_05'), allow suggestions that represent a flip flip (reverting a previously made suggestion), but only if the previous suggestion was made on a release before the one specified here
     # # # ORGANISMS definition # # #
     # use panther organism names as values in the following dict, with tax_id as keys
     "tax2org": {9606: "human", 10090: "mouse", 10116: "rat", 9913: "cow", 9615: "dog"},

@@ -999,7 +999,7 @@ def scan_ndata_file(
                     p_acc,
                     orthoid,
                     config=config,
-                    verbose=verbose,
+                    verbose=True,
                 )
                 if print_new_sugg:
                     # if all ok (if check returns True) we'll print the new_sugg also to gc_output
