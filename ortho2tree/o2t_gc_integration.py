@@ -37,13 +37,14 @@ prev_changes_columns = [
 
 
 def check_suggestion_against_prev(
-    prevgc_df, taxon, canon_acc, p_acc, orthoid, verbose=True
+    prevgc_df, taxon, canon_acc, p_acc, orthoid, config=None, verbose=True
 ):
     """
     prev_sugg (if it exists) and new_sugg get merged with the following rules:
     1) if new_sugg and prev_sugg are same, prev_sugg will be printed
     2) if new_sugg contains a "flip flop", i.e. a pair where we suggest A->B where prev_sugg had "B->A",
        prev_sugg will be printed and new_sugg ignored
+      2.2) UNLESS 'allow_flipflop' config parameter is set
     3) if new_sugg contains a novel suggestion for the same panther_id and same taxon involving one of the accessions from prev_sugg (e.g. B->C),
        then the suggestion "A->B" from prev_sugg is removed and the new one is printed instead
     4-5) otherwise they don't conflict and they both get printed (e.g. different clade even if same taxon)
@@ -85,10 +86,32 @@ def check_suggestion_against_prev(
                     & (prevgc_sugg_taxon["replacement"] == canon_acc)
                 ]
             ):
-                # case 2: new_sugg is a flip flop of a previous suggestion
+                prevsugg_release = prevgc_sugg_taxon[
+                    (prevgc_sugg_taxon["oldcanon"] == p_acc)
+                    & (prevgc_sugg_taxon["replacement"] == canon_acc)
+                ]["release"].values[0]
+                allow_flipflop = config.get("allow_flipflop", False)
+                if allow_flipflop:
+                    # case 2.2 == case 3: new_sugg not considered a flip flop and instead old suggestion is removed
+                    if verbose:
+                        eprint(
+                            "INT allowed flip flop: {}->{} [{}], removing prev_gc from {}".format(
+                                canon_acc, p_acc, orthoid, prevsugg_release
+                            )
+                        )
+                    prevgc_df.loc[prevgc_match.index, "conflict"] = True
+                    # remove prev_sugg in multithread processing
+                    return True, "{}".format(
+                        prevgc_df.loc[
+                            prevgc_match.index, ["oldcanon", "replacement"]
+                        ].to_csv(index=False, header=False, sep="\t")
+                    )
+                # case 2.1: new_sugg is a flip flop of a previous suggestion
                 if verbose:
                     eprint(
-                        "INT flip flop: {}<>{} [{}]".format(canon_acc, p_acc, orthoid)
+                        "INT flip flop: {}<>{} [{}], ignored due to prev_gc from {}".format(
+                            canon_acc, p_acc, orthoid, prevsugg_release
+                        )
                     )
                 return (
                     False,
@@ -97,11 +120,12 @@ def check_suggestion_against_prev(
             else:  # one (or more) prev_sugg conflict with new_sugg: remove prev_sugg(s)
                 if verbose:
                     eprint(
-                        "INT new_sugg {}->{} conflicts with prev_gc: {} [{}]".format(
+                        "INT new_sugg {}->{} conflicts with prev_gc: {} [{}]{}".format(
                             canon_acc,
                             p_acc,
                             prevgc_match[["oldcanon", "replacement"]].values,
                             orthoid,
+                            prevgc_match["release"].values,
                         )
                     )
                 # case 3: new_sugg contains novel suggestion conflicting with prev_sugg, so we need to remove prev_sugg
@@ -300,9 +324,9 @@ def read_prev_changes(ortho_df, config=None):
 
     eprint("INT prevgc now contains {} suggestions".format(len(prevgc_df)))
 
-    prevgc_df[
-        "conflict"
-    ] = False  # we init saying all is good; we'll mark it True if it has to be removed from output
+    prevgc_df["conflict"] = (
+        False  # we init saying all is good; we'll mark it True if it has to be removed from output
+    )
 
     return prevgc_df
 

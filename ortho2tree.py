@@ -69,8 +69,6 @@ except ImportError:
     sys.stderr.write("NOTICE: sqlalchemy module not available\n")
 
 
-# ## Part 1) Configuration and setup
-
 # In[ ]:
 
 
@@ -107,6 +105,7 @@ config = {
     "taxa_threshold": 3,  # number of different organisms that should be in the low-cost clade for acceptance (if taxa in tree more than this, otherwise use min_taxa_threshold)
     "tree_max_cost": 0.05,  # exclude tree_to_ndata solutions with costs higher than this (default=0.05)
     "tree_drop_fact": 1.5,  # improvement required to drop a taxon
+    "gap_threshold": 0,  # threshold for counting gaps
     "superfamily_level": False,  # set to true to work at superfamily level
     "add_refseq": False,  # whether we want to add refseq sequences to orthogroups
     # # parameters used when scanning n_data2 files to select suggestions # #
@@ -163,11 +162,14 @@ config = {
     # # # GCINTEGRATION # # #
     "sugg_file": False,  # if a filename is specified, it will be read to simulate genecentric application of ortho2tree using previously created suggestions
     "prevgc_file": False,  # if a filename is specified, it will be read and used for cumulative integrated changes for genecentric pipeline
+    "allow_flipflop": False,  # allow suggestions that represent a flip flop (reverting a previously made suggestion)?
     # # # ORGANISMS definition # # #
     # use panther organism names as values in the following dict, with tax_id as keys
     "tax2org": {9606: "human", 10090: "mouse", 10116: "rat", 9913: "cow", 9615: "dog"},
 }
 
+
+# ## Part 1) Configuration and setup
 
 # ### Configuration override from a yaml configuration file, if present and parsing of arguments
 

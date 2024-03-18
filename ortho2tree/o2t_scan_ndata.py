@@ -993,7 +993,13 @@ def scan_ndata_file(
             # if we have a prevgc_df, check the new_sugg against prev_sugg for possible conflicts or flipflips:
             if not prevgc_df.empty:
                 print_new_sugg, conflict_text = check_suggestion_against_prev(
-                    prevgc_df, p_taxa, canon_acc, p_acc, orthoid
+                    prevgc_df,
+                    p_taxa,
+                    canon_acc,
+                    p_acc,
+                    orthoid,
+                    config=config,
+                    verbose=verbose,
                 )
                 if print_new_sugg:
                     # if all ok (if check returns True) we'll print the new_sugg also to gc_output
