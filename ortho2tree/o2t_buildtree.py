@@ -8,17 +8,12 @@ module providing functions
 import os
 import re
 
-# import time #timing
+# import time  # timing
 from multiprocessing import current_process
 from Bio import Phylo
 from Bio import AlignIO
 from .config_muscle import ALIGN_FORMAT
-from .o2t_utils import (
-    eprint,
-    get_orthologs_df_from_pantherid,
-    sequences2fasta,
-    # elapsed_time, #timing
-)
+from .o2t_utils import eprint, get_orthologs_df_from_pantherid, sequences2fasta
 from .o2t_alignment import get_alignment
 from .o2t_alignment2tree import alignment2tree
 from .o2t_tree2ndata import tree_to_ndata, get_leaf_acc
@@ -40,7 +35,7 @@ def get_tree_for_orthogroup(
     """
     nwk_tree = None
     tree_fname = os.path.join(config["tree_data_dir"], orthoid + ".nwk")
-    # semaphore_file = os.path.join(config["semaphores_dir"], orthoid + ".done") #timing
+    # semaphore_file = os.path.join(config["semaphores_dir"], orthoid + ".done")  # timing
 
     # try to read previously created tree, if there is
     if config["cache_trees_flag"]:
@@ -74,12 +69,12 @@ def get_tree_for_orthogroup(
                 eprint("No orthologs!")
                 return [None] * 3
             # eprint("{}: collecting sequences for {}".format(orthoid, orthologs)) #debug
-            # process_start_time = time.time() #timing
+            # process_start_time = time.time()  # timing
             sequences_dict = get_sequences_fn(orthologs, orthoid=orthoid)
-            # process_name = "s" #timing
-            # process_duration = time.time() - process_start_time #timing
-            # with open(semaphore_file, "a") as fh: #timing
-            #   fh.write("{}\t{}\n".format(process_name, process_duration)) #timing
+            # process_name = "s"  # timing
+            # process_duration = time.time() - process_start_time  # timing
+            # with open(semaphore_file, "a") as fh:  # timing
+            #   fh.write("{}\t{}\n".format(process_name, process_duration))  # timing
             # eprint("{}: got sequences for {}".format(orthoid, set(sequences_dict.keys()))) #debug
             if not sequences_dict:
                 eprint("No sequences!")
@@ -132,12 +127,12 @@ def get_tree_for_orthogroup(
             # eprint("prepared fasta: {}".format(fasta_txt)) #debug
 
             # call muscle
-            # process_start_time = time.time() #timing
-            align = get_alignment(fasta_txt)  # , textoutput=True)
-            # process_name = "a" #timing
-            # process_duration = time.time() - process_start_time #timing
-            # with open(semaphore_file, "a") as fh: #timing
-            #   fh.write("{}\t{}\n".format(process_name, process_duration)) #timing
+            # process_start_time = time.time()  # timing
+            align = get_alignment(fasta_txt)
+            # process_name = "a"  # timing
+            # process_duration = time.time() - process_start_time  # timing
+            # with open(semaphore_file, "a") as fh:  # timing
+            #   fh.write("{}\t{}\n".format(process_name, process_duration))  # timing
             if align is None:
                 eprint("{} ERROR: No alignment!".format(orthoid))
                 return [None] * 3
@@ -151,14 +146,14 @@ def get_tree_for_orthogroup(
         # AlignIO.write(align, sys.stderr, ALIGN_FORMAT) #debug full
 
         # build a gap-distance based evolutionary tree aka calc_pdist_g2.py
-        # process_start_time = time.time() #timing
+        # process_start_time = time.time()  # timing
         nwk_tree = alignment2tree(
             align, orthoid=orthoid, config=config, verbose=verbose
         )
-        # process_name = "t" #timing
-        # process_duration = time.time() - process_start_time #timing
-        # with open(semaphore_file, "a") as fh: #timing
-        #   fh.write("{}\t{}\n".format(process_name, process_duration)) #timing
+        # process_name = "t"  # timing
+        # process_duration = time.time() - process_start_time  # timing
+        # with open(semaphore_file, "a") as fh:  # timing
+        #   fh.write("{}\t{}\n".format(process_name, process_duration))  # timing
         if nwk_tree is None:
             eprint("{} ERROR: No tree!".format(orthoid))
             return [None] * 3
@@ -221,7 +216,7 @@ def build_tree_for_orthogroup(
         Phylo.draw(nwk_tree)  # debug, original tree
 
     # report zero-cost clades aka tree_cost2r.py
-    # process_start_time = time.time() #timing
+    # process_start_time = time.time()  # timing
     l_tree, n_data, labels = tree_to_ndata(
         nwk_tree,
         ortho_df=ortho_df,
@@ -233,11 +228,11 @@ def build_tree_for_orthogroup(
         drop_taxa=True,
         create_ndata_file=True,
     )
-    # process_name = "n" #timing
-    # process_duration = time.time() - process_start_time #timing
-    # semaphore_file = os.path.join(config["semaphores_dir"], orthoid + ".done") #timing
-    # with open(semaphore_file, "a") as fh: #timing
-    #   fh.write("{}\t{}\n".format(process_name, process_duration)) #timing
+    # process_name = "n"  # timing
+    # process_duration = time.time() - process_start_time  # timing
+    # semaphore_file = os.path.join(config["semaphores_dir"], orthoid + ".done")  # timing
+    # with open(semaphore_file, "a") as fh:  # timing
+    #   fh.write("{}\t{}\n".format(process_name, process_duration))  # timing
 
     if debuginfo:
         eprint("labelled tree: {}".format(l_tree.format("newick")))  # debug

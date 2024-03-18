@@ -16,13 +16,14 @@ def output_headers(config=None):
     """
     wgts = config["suggestion_ranking_weights"]
     wgt_keys = list(wgts.keys())
-    params_header = "#[trees] panther:{} up:{} aln_min_taxa:{} clade_min_taxa:{} tree_max_cost:{} tree_drop_fact:{}\n".format(
+    params_header = "#[trees] panther:{} up:{} aln_min_taxa:{} clade_min_taxa:{} tree_max_cost:{} tree_drop_fact:{} gap_threshold:{}\n".format(
         config["panther_version"],
         config["up_release"],
         config["min_taxa_threshold"],
         config["taxa_threshold"],
         config["tree_max_cost"],
         config["tree_drop_fact"],
+        config["gap_threshold"],
     )
     params_header += "#[suggestions] cost_diff:{} min_taxa:{} min_canon:{} max_cost:{} only_zero_cost:{} min_delta:{} min_delta_sp:{}\n".format(
         config["suggestion_score_difference"],

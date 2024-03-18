@@ -13,7 +13,7 @@ from urllib.error import URLError
 from contextlib import closing
 
 
-GCURL = 'https://SPECIFYGCURL'
+GCURL = "https://SPECIFYGCURL"
 
 
 def get_panther_seq_classification(organism, config=None):

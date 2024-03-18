@@ -5,11 +5,11 @@ import itertools
 import re
 import sys
 
-# import os #timing
-# import time #timing
+# import os  # timing
+# import time  # timing
 
 from Bio.Phylo.TreeConstruction import DistanceTreeConstructor, DistanceMatrix
-from .o2t_utils import eprint  # , elapsed_time #timing
+from .o2t_utils import eprint
 
 # PDIST_CALC = DistanceCalculator("pam30")
 CONSTRUCTOR = DistanceTreeConstructor()
@@ -44,36 +44,51 @@ def _matrixcompare(m1, m2):
     return True
 
 
-def _pairwise(seq1, seq2):
+def _pairwise(seq1, seq2, g_thresh):
     """
     Calculate pairwise distance from two sequences
     Returns a value between 0 (identical sequences) and 1 (completely different, or seq1 is an empty string.)
     Only consider presence of gaps for scoring
+    If parameter g_thresh is passed, only gaps longer than that threshold will be considered for the cost.
     """
-    score = alen = 0
+    score = alen = gap_len = 0
+    in_gap = False
+
     for l1, l2 in zip(seq1, seq2):
-        if l1 != l2:
+        if l1 != l2:  # they differ
             alen += 1
             if l1 == "-" or l2 == "-":
-                score += 1
-        elif l1 != "-":
-            alen += 1
+                in_gap = True
+                gap_len += 1
+        else:  # they are the same
+            if l1 != "-":  # but not both gap
+                alen += 1
+                if in_gap:
+                    if gap_len > g_thresh:
+                        score += gap_len
+                    in_gap = False
+                    gap_len = 0
+
+    if in_gap and gap_len > g_thresh:
+        score += gap_len
+
     if alen > 0:
         return float(score) / alen
     else:
         return 1.0
 
 
-def _get_distance(msa):
+def _get_distance(msa, g_thresh):
     """
     given a Bio.Align.MultipleSeqAlignment return a DistanceMatrix
     Only consider presence of gaps for scoring
+    Optionally only considers gaps longer than specified g_thresh
     NOTE: barebone version of Bio.Phylo.TreeConstruction.DistanceCalculator.get_distance
     """
     names = [s.id for s in msa]
     dm = DistanceMatrix(names)
     for seq1, seq2 in itertools.combinations(msa, 2):
-        dm[seq1.id, seq2.id] = _pairwise(seq1, seq2)
+        dm[seq1.id, seq2.id] = _pairwise(seq1, seq2, g_thresh)
     return dm
 
 
@@ -130,7 +145,10 @@ def bt_extract_acc(entry):
 
 
 def alignment2tree(aln, orthoid="", verbose=False, config=None):
-    # semaphore_file = os.path.join(config["semaphores_dir"], orthoid + ".done") #timing
+    # semaphore_file = os.path.join(config["semaphores_dir"], orthoid + ".done")  # timing
+    g_thresh = config.get(
+        "gap_threshold", 0
+    )  # to only consider gaps longer than this threshold
 
     # distance matrix using gap-based distances
     # gdist_ori = PDIST_CALC.get_distance(aln)
@@ -139,21 +157,21 @@ def alignment2tree(aln, orthoid="", verbose=False, config=None):
     #    for jx in range(ix):
     #        gdist_ori.matrix[ix][jx] = bt_gap_dist(aln[ix], aln[jx])
 
-    # process_start_time = time.time() #timing
-    gdist = _get_distance(aln)
+    # process_start_time = time.time()  # timing
+    gdist = _get_distance(aln, g_thresh)
     # process_name = "t1"  # getdist new internal code #timing
-    # process_duration = time.time() - process_start_time #timing
-    # with open(semaphore_file, "a") as fh: #timing
-    #   fh.write("{}\t{}\n".format(process_name, process_duration)) #timing
+    # process_duration = time.time() - process_start_time  # timing
+    # with open(semaphore_file, "a") as fh:  # timing
+    #   fh.write("{}\t{}\n".format(process_name, process_duration))  # timing
 
-    # process_start_time = time.time()
+    # process_start_time = time.time() # timing
     njtree_g = CONSTRUCTOR.nj(gdist)
     # process_name = "t3"  # constructor #timing
-    # process_duration = time.time() - process_start_time #timing
-    # with open(semaphore_file, "a") as fh: #timing
-    #   fh.write("{}\t{}\n".format(process_name, process_duration)) #timing
+    # process_duration = time.time() - process_start_time  # timing
+    # with open(semaphore_file, "a") as fh:  # timing
+    #   fh.write("{}\t{}\n".format(process_name, process_duration))  # timing
 
-    # process_start_time = time.time() #timing
+    # process_start_time = time.time()  # timing
     try:  # if it fails, it may mean worst_canon_dist = 0
         njtree_g.root_at_midpoint()
     except Exception as e:
@@ -192,8 +210,8 @@ def alignment2tree(aln, orthoid="", verbose=False, config=None):
             )
             return None
     # process_name = "t4"  # rooting #timing
-    # process_duration = time.time() - process_start_time #timing
-    # with open(semaphore_file, "a") as fh: #timing
-    #   fh.write("{}\t{}\n".format(process_name, process_duration)) #timing
+    # process_duration = time.time() - process_start_time  # timing
+    # with open(semaphore_file, "a") as fh:  # timing
+    #   fh.write("{}\t{}\n".format(process_name, process_duration))  # timing
 
     return njtree_g
