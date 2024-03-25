@@ -36,6 +36,52 @@ prev_changes_columns = [
 ]
 
 
+def check_altgroup_suggestion(
+    prevgc_df, taxon, canon_acc, p_acc, orthoid, config=None, verbose=True
+):
+    """
+    Consistency check:
+    if there are previous suggestions mentioning either current cano or suggested replacement
+    but belonging to a different orthoid, remove them (obsolete)
+
+    returns:
+      conflict_text (to remove the prev_sugg)
+      (due to parallel processing, it's not enough to mark it as conflict in the df)
+    """
+    prevgc_sugg_alt = prevgc_df[
+        (prevgc_df["pantherid"] != orthoid)
+        & (prevgc_df["org"] == taxon)
+        & (
+            prevgc_df[["oldcanon", "replacement"]]
+            .isin([canon_acc, p_acc])
+            .any(axis=1)
+        )
+    ]
+    if prevgc_sugg_alt.empty:
+        return ""
+    else:
+        # there is/are suggestion(s) mentioning one of canon_acc or p_acc
+        # we remove them as they belong to old family assignments
+        if verbose:
+            eprint(
+                "INT new_sugg {}->{} obsoletes prev_gc with different orthoid: {} [{}]".format(
+                    canon_acc,
+                    p_acc,
+                    prevgc_sugg_alt[
+                        ["oldcanon", "replacement", "pantherid"]
+                    ].values,
+                    orthoid,
+                )
+            )
+        prevgc_df.loc[prevgc_sugg_alt.index, "conflict"] = True
+        # remove prev_sugg in multithread processing
+        return "{}".format(
+            prevgc_df.loc[
+                prevgc_sugg_alt.index, ["oldcanon", "replacement"]
+            ].to_csv(index=False, header=False, sep="\t")
+        )
+
+
 def check_suggestion_against_prev(
     prevgc_df, taxon, canon_acc, p_acc, orthoid, config=None, verbose=True
 ):
@@ -49,7 +95,6 @@ def check_suggestion_against_prev(
     3) if new_sugg contains a novel suggestion for the same panther_id and same taxon involving one of the accessions from prev_sugg (e.g. B->C),
        then the suggestion "A->B" from prev_sugg is removed and the new one is printed instead
     4-5) otherwise they don't conflict and they both get printed (e.g. different clade even if same taxon)
-    6) if there are previous suggestions mentioning A->B for the new suggestion but with a different orthoid, remove them (obsolete)
 
     returns:
       True/False (whether the new_sugg should get printed out to gc_output)
@@ -151,44 +196,12 @@ def check_suggestion_against_prev(
                 "",
             )  # we print new_sugg as it contains not conflicting novel suggestion
     else:  # no prev_sugg for this taxon and orthoid
-        # now check if a suggestion involving a different orthoid existed (different family assignment)
-        prevgc_sugg_alt = prevgc_df[
-            (prevgc_df["pantherid"] != orthoid)
-            & (prevgc_df["org"] == taxon)
-            & (
-                prevgc_df[["oldcanon", "replacement"]]
-                .isin([canon_acc, p_acc])
-                .any(axis=1)
-            )
-        ]
-        if prevgc_sugg_alt.empty:
-            # case 5: the new_sugg is printed:
-            # it's either totally new, because for this orthoid+taxon there was no prev_sugg OR
-            # there were conflicting suggestions but they had a different (old/previous) orthoid assignment (case 6)
-            # if verbose:
-            #   eprint("INT new_sugg {} [{}]".format(canon_acc, orthoid))
-            return True, ""
-        else:
-            # case 6: if there is/are suggestion(s) mentioning one of canon_acc or p_acc
-            # we remove them as they belong to old family assignments
-            if verbose:
-                eprint(
-                    "INT new_sugg {}->{} obsoletes prev_gc with different orthoid: {} [{}]".format(
-                        canon_acc,
-                        p_acc,
-                        prevgc_sugg_alt[
-                            ["oldcanon", "replacement", "pantherid"]
-                        ].values,
-                        orthoid,
-                    )
-                )
-            prevgc_df.loc[prevgc_sugg_alt.index, "conflict"] = True
-            # remove prev_sugg in multithread processing
-            return True, "{}".format(
-                prevgc_df.loc[
-                    prevgc_sugg_alt.index, ["oldcanon", "replacement"]
-                ].to_csv(index=False, header=False, sep="\t")
-            )
+        # case 5: the new_sugg is printed:
+        # it's either totally new, because for this orthoid+taxon there was no prev_sugg OR
+        # there were conflicting suggestions but they had a different (old/previous) orthoid assignment (case 6)
+        # if verbose:
+        #   eprint("INT new_sugg {} [{}]".format(canon_acc, orthoid))
+        return True, ""
 
 
 def read_prev_changes(ortho_df, config=None):

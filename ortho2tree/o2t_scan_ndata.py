@@ -11,7 +11,7 @@ import time
 from Bio import AlignIO
 from Bio.Seq import Seq  # for aln2fastax
 from .o2t_utils import eprint, get_orthologs_df_from_pantherid, elapsed_time
-from .o2t_gc_integration import check_suggestion_against_prev
+from .o2t_gc_integration import check_altgroup_suggestion, check_suggestion_against_prev
 from .config_muscle import ALIGN_FORMAT
 from .o2t_tree2ndata import selected_clade_cost
 from .o2t_buildtree import get_tree_for_orthogroup
@@ -990,8 +990,21 @@ def scan_ndata_file(
             )
             suggestions_output_text += formatted_change + "\n"
 
-            # if we have a prevgc_df, check the new_sugg against prev_sugg for possible conflicts or flipflips:
-            if not prevgc_df.empty:
+            if not prevgc_df.empty: # if we have a prevgc_df
+                # first check if a suggestion involving a different orthoid existed (different family assignment)
+                conflict_text = check_altgroup_suggestion(
+                    prevgc_df,
+                    p_taxa,
+                    canon_acc,
+                    p_acc,
+                    orthoid,
+                    config=config,
+                    verbose=True,
+                )
+                if conflict_text: #this one for obsolete ones belonging to different orthoid
+                    # to be able to remove conflicts even in multi-thread operation (the marking of conflict will not be shared across parallel workers)
+                    conflict_output_text += conflict_text
+                # then check the new_sugg against prev_sugg for possible conflicts or flipflips:
                 print_new_sugg, conflict_text = check_suggestion_against_prev(
                     prevgc_df,
                     p_taxa,
@@ -1006,7 +1019,7 @@ def scan_ndata_file(
                     gc_output_text += formatted_change_md5 + "\t{}\t{}\n".format(
                         config["up_release"], config["dataset_name"]
                     )
-                if conflict_text:
+                if conflict_text: #this one for all other cases
                     # to be able to remove conflicts even in multi-thread operation (the marking of conflict will not be shared across parallel workers)
                     conflict_output_text += conflict_text
             else:  # simply print the new_sugg
