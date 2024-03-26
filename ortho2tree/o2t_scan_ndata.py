@@ -990,7 +990,7 @@ def scan_ndata_file(
             )
             suggestions_output_text += formatted_change + "\n"
 
-            if not prevgc_df.empty: # if we have a prevgc_df
+            if not prevgc_df.empty:  # if we have a prevgc_df
                 # first check if a suggestion involving a different orthoid existed (different family assignment)
                 conflict_text = check_altgroup_suggestion(
                     prevgc_df,
@@ -1001,7 +1001,9 @@ def scan_ndata_file(
                     config=config,
                     verbose=True,
                 )
-                if conflict_text: #this one for obsolete ones belonging to different orthoid
+                if (
+                    conflict_text
+                ):  # this one for obsolete ones belonging to different orthoid
                     # to be able to remove conflicts even in multi-thread operation (the marking of conflict will not be shared across parallel workers)
                     conflict_output_text += conflict_text
                 # then check the new_sugg against prev_sugg for possible conflicts or flipflips:
@@ -1019,7 +1021,7 @@ def scan_ndata_file(
                     gc_output_text += formatted_change_md5 + "\t{}\t{}\n".format(
                         config["up_release"], config["dataset_name"]
                     )
-                if conflict_text: #this one for all other cases
+                if conflict_text:  # this one for all other cases
                     # to be able to remove conflicts even in multi-thread operation (the marking of conflict will not be shared across parallel workers)
                     conflict_output_text += conflict_text
             else:  # simply print the new_sugg

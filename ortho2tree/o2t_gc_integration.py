@@ -6,7 +6,7 @@ module providing functions involved in integration with the genecentric pipeline
 import os
 import sys
 import pandas as pd
-from .o2t_utils import eprint
+from .o2t_utils import eprint, create_sortjoined_column
 
 
 prev_changes_columns = [
@@ -36,6 +36,31 @@ prev_changes_columns = [
 ]
 
 
+def remove_old_flipflops(df):
+    """
+    identify and remove obsolete flip flops
+    (suggestions with a more recent opposite direction suggestion)
+    """
+    df = create_sortjoined_column(
+        df,
+        column1_name="oldcanon",
+        column2_name="replacement",
+        joined_name="set",
+        separator=".",
+    )
+    old_flipflops = df[df.duplicated(["set"], keep="last")][
+        ["release", "oldcanon", "replacement"]
+    ]
+    if not old_flipflops.empty:
+        eprint(
+            "Removing the following prevgc suggestions as their opposite direction suggestions are also present, and more recent"
+        )
+        eprint(old_flipflops.to_csv(sep="\t", index=False))
+        df.drop_duplicates(["set"], keep="last", inplace=True)
+    df.drop("set", axis=1, inplace=True)
+    return df
+
+
 def check_altgroup_suggestion(
     prevgc_df, taxon, canon_acc, p_acc, orthoid, config=None, verbose=True
 ):
@@ -51,11 +76,7 @@ def check_altgroup_suggestion(
     prevgc_sugg_alt = prevgc_df[
         (prevgc_df["pantherid"] != orthoid)
         & (prevgc_df["org"] == taxon)
-        & (
-            prevgc_df[["oldcanon", "replacement"]]
-            .isin([canon_acc, p_acc])
-            .any(axis=1)
-        )
+        & (prevgc_df[["oldcanon", "replacement"]].isin([canon_acc, p_acc]).any(axis=1))
     ]
     if prevgc_sugg_alt.empty:
         return ""
@@ -67,18 +88,16 @@ def check_altgroup_suggestion(
                 "INT new_sugg {}->{} obsoletes prev_gc with different orthoid: {} [{}]".format(
                     canon_acc,
                     p_acc,
-                    prevgc_sugg_alt[
-                        ["oldcanon", "replacement", "pantherid"]
-                    ].values,
+                    prevgc_sugg_alt[["oldcanon", "replacement", "pantherid"]].values,
                     orthoid,
                 )
             )
         prevgc_df.loc[prevgc_sugg_alt.index, "conflict"] = True
         # remove prev_sugg in multithread processing
         return "{}".format(
-            prevgc_df.loc[
-                prevgc_sugg_alt.index, ["oldcanon", "replacement"]
-            ].to_csv(index=False, header=False, sep="\t")
+            prevgc_df.loc[prevgc_sugg_alt.index, ["oldcanon", "replacement"]].to_csv(
+                index=False, header=False, sep="\t"
+            )
         )
 
 
@@ -241,9 +260,12 @@ def read_prev_changes(ortho_df, config=None):
     prevgc_df.drop_duplicates(subset=["org", "oldcanon"], keep="last", inplace=True)
     prevgc_df.drop_duplicates(subset=["org", "replacement"], keep="last", inplace=True)
 
+    # remove obsolete flip flops
+    prevgc_df = remove_old_flipflops(prevgc_df)
+
     if prevgc_df_size != len(prevgc_df):
         eprint(
-            "INT after cleaning up cases of changed family assignment, prevgc file now contains {} unique suggestions".format(
+            "INT after cleaning up cases of changed family assignment and obsolete flip flops, prevgc file now contains {} unique suggestions".format(
                 len(prevgc_df)
             )
         )

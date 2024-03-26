@@ -8,6 +8,7 @@ import re
 import sys
 import time
 import pandas as pd
+from numpy import where
 from hashlib import md5  # for md5sum calculation
 from requests import get  # for web retrieval
 
@@ -492,3 +493,38 @@ def get_orthologs_df_from_pantherid(orthoid, ortho_df, remove_outliers=False):
         return ortho_df[(ortho_df["pantherid"] == orthoid) & ~(ortho_df["outlier"])]
     else:
         return ortho_df[ortho_df["pantherid"] == orthoid]
+
+
+def create_sortjoined_column(
+    df,
+    column1_name="column1",
+    column2_name="column2",
+    joined_name="joinedcolumn",
+    separator=".",
+):
+    """
+    create a new column in a df, combining the values from two existing columns,
+    concatenating them in alphabetical order, separated by specified separator.
+    """
+    columns = df.columns
+    if column1_name not in columns:
+        eprint(f"Error: {column1_name} not in df")
+        return df
+    if column2_name not in columns:
+        eprint(f"Error: {column2_name} not in df")
+        return df
+    if joined_name in columns:
+        eprint(f"Error: {joined_name} column already exists!")
+        return df
+
+    # using apply:
+    # df[joined_name] = df[[column1_name, column2_name]].apply(lambda x: separator.join(sorted(x)), axis=1)
+
+    # vectorized approach (5x faster):
+    df[joined_name] = where(
+        df[column1_name] < df[column2_name],
+        df[column1_name] + separator + df[column2_name],
+        df[column2_name] + separator + df[column1_name],
+    )
+
+    return df
