@@ -45,6 +45,11 @@ def read_ortho_df(config=None):
         )
     )
 
+    # simulation
+    if config.get("sugg_file", False):
+        # optional simulation of applying changes (previous suggestions)
+        simulate_changes(ortho_df, config=config)
+
     return ortho_df, prevgc_df
 
 
@@ -140,11 +145,6 @@ def create_ortho_df(panther_df, gc_df, config=None, get_sequences_fn=None):
                 )
             )
             config["prevgc_file"] = False
-
-    # simulation
-    if config.get("sugg_file", False):
-        # optional simulation of applying changes (previous suggestions)
-        simulate_changes(ortho_df, config=config)
 
     # refseq integration
     if config["add_refseq"]:
@@ -351,13 +351,19 @@ def create_ortho_df(panther_df, gc_df, config=None, get_sequences_fn=None):
 
     # create a dump of the orthogroup data
     if config["dump_orthogroup_data"]:
+        eprint("\nDumping the dataframe to file...")
         ortho_df.to_csv(
             config["orthogroup_df_dumpfile"],
             index=True,
             index_label="acc",
             compression="gzip",
         )
-        eprint("\nDataframe dumped as {}".format(config["orthogroup_df_dumpfile"]))
+        eprint("Dataframe dumped as {}".format(config["orthogroup_df_dumpfile"]))
+
+    # simulation
+    if config.get("sugg_file", False):
+        # optional simulation of applying changes (previous suggestions)
+        simulate_changes(ortho_df, config=config)
 
     return ortho_df, prevgc_df
 

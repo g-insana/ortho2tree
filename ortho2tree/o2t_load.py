@@ -83,6 +83,16 @@ def get_panther_df(config=None):
     df.set_index("acc", inplace=True)
     eprint(" total number of entries from panther: {}".format(len(df)))
 
+    panther_data_taxids = list(tax2oscode.keys())
+    eprint(" total number of species from panther: {}".format(len(panther_data_taxids)))
+
+    if set(panther_data_taxids) != set(config["tax_ids"]):
+        eprint(
+            "ERROR! We could not retrieve any panther data for the following taxa: {}".format(
+                sorted(set(config["tax_ids"]).difference(set(panther_data_taxids)))
+            )
+        )
+
     if config["superfamily_level"]:
         df["lo_pantherid"] = [x.split(":", 1)[1] for x in df["pantherid"]]
         df["pantherid"] = [x.split(":", 1)[0] for x in df["pantherid"]]
@@ -189,7 +199,15 @@ and not exists (select 1 from sptr.gene_centric_entry gce2 where gce.group_id=gc
         subset=["groupid", "md5sum"], keep="first"
     )  # remove multiple identical sequences in same gcgroup, keeping the canonical
     gc_df.set_index("acc", inplace=True)
-    gc_df = gc_df.loc[gc_df["tax_id"].isin(config["tax_ids"])]  # drop any extra taxa
+
+    # drop any extra taxa which might be present in gc file provided
+    gc_df = gc_df.loc[gc_df["tax_id"].isin(config["tax_ids"])]
+
+    # drop taxa for which we do not have panther mapping
+    panther_data_taxids = list(config["tax2oscode"].keys())
+    if set(panther_data_taxids) != set(config["tax_ids"]):
+        eprint("Dropping from gc data taxa for which no panther data was loaded")
+    gc_df = gc_df.loc[gc_df["tax_id"].isin(panther_data_taxids)]
 
     # oscode from tax_id
     gc_df["org"] = [config["tax2oscode"][x] for x in gc_df["tax_id"]]

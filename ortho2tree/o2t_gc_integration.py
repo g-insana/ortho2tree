@@ -460,7 +460,9 @@ def simulate_changes(ortho_df, config=None):
         sys.exit(22)  # invalid
     if os.path.isfile(config["sugg_file"]):
         eprint(
-            "SIMULATION: Reading prev_suggestions file '{}'".format(config["sugg_file"])
+            "\nSIMULATION: Reading prev_suggestions file '{}'".format(
+                config["sugg_file"]
+            )
         )
         prev_suggestions_df = pd.read_csv(
             config["sugg_file"],
@@ -514,13 +516,19 @@ def simulate_changes(ortho_df, config=None):
                 prevsugg_notfound_count
             )
         )
+        eprint(
+            prev_suggestions_df.loc[prevsugg_notfound.index][
+                ["oldcanon", "replacement"]
+            ].to_csv(sep="\t", index=False)
+        )
         prev_suggestions_df.drop(prevsugg_notfound.index, inplace=True)
 
         # minimal consistency check: all the oldcanon we are changing should actually be canonicals and vice versa
         oldcanon_check = ortho_df.loc[
             prev_suggestions_df["oldcanon"]
         ].is_canonical.unique()
-        if oldcanon_check != [True]:
+        # if oldcanon_check != [True]:
+        if not all(oldcanon_check):
             eprint(
                 "    => ERROR: Not all the canon_acc from the prev_suggestions file are actually canonicals in the ortho_df! Please check!"
             )
@@ -528,7 +536,8 @@ def simulate_changes(ortho_df, config=None):
         replacement_check = ortho_df.loc[
             prev_suggestions_df["replacement"]
         ].is_canonical.unique()
-        if replacement_check != [False]:
+        # if replacement_check != [False]:
+        if any(replacement_check):
             eprint(
                 "    => ERROR: Not all the prop_acc from the prev_suggestions file are actually isoforms in the ortho_df! Please check!"
             )
