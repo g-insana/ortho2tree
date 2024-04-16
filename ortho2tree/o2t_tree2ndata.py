@@ -568,6 +568,8 @@ def print_ndata(select):
     CLADENAME :: CLADECOST/CLADETAXANUM :: TAXON:db|ACC diff_cost,TAXON:db|ACC diff_cost[...] :: CANONCOST/CANONTAXANUM :: TAXON:CANONACC,TAXON:CANONACC[...]
     """
     (clade, leaves, cost) = (select["clade"], select["leaves"], select["cost"])
+    if (cost < 0.000):
+        cost = 0.000
     gc_canonicals_cost = select["canonical_cost"]
     gc_clade_canonicals = select["canonical_dict"]
 
@@ -608,12 +610,14 @@ def remove_to_improve(
     adds to new_selected list with t_clade/t_cost
     returns new_selected, but also updates old_tested
     """
+    zero_eps = 0.0000001
+
     if level > max_rlevel:
         return new_selected
 
     level += 1
 
-    if t_clade["cost"] == 0.0:
+    if t_clade["cost"] <= zero_eps:
         return new_selected
 
     if len(t_clade["leaves"]) > min_taxa:
@@ -885,6 +889,8 @@ def tree_to_ndata(
         old_tested = {}
 
         for t_clade in selected_clades:
+            if (t_clade['cost'] <= zero_eps):
+                continue
             # recursively updated new_selected, old_tested
             dropped = []
             new_selected = remove_to_improve(

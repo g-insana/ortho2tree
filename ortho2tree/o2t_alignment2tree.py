@@ -171,6 +171,12 @@ def alignment2tree(aln, orthoid="", verbose=False, config=None):
     # with open(semaphore_file, "a") as fh:  # timing
     #   fh.write("{}\t{}\n".format(process_name, process_duration))  # timing
 
+    # here we need to set all negative branch lengths to zero (it
+    # would be better to preserve distances, but zero is a start)
+    for clade in njtree_g.find_clades():
+        if (clade.branch_length < 0.0):
+            clade.branch_length = 0.0
+
     # process_start_time = time.time()  # timing
     try:  # if it fails, it may mean worst_canon_dist = 0
         njtree_g.root_at_midpoint()
