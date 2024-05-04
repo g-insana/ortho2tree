@@ -1,4 +1,5 @@
 # ortho2tree
+[![DOI](https://zenodo.org/badge/743469512.svg)](https://zenodo.org/doi/10.5281/zenodo.11113231)
 
 The [UniProt](https://www.uniprot.org) [Reference Proteomes dataset](https://www.uniprot.org/help/reference_proteome) seeks to provide complete proteomes for an evolutionarily diverse, less redundant, set of organisms. 
 
