@@ -145,7 +145,7 @@ A script to generate the pdf files is included under the folder [pdfcreation/](p
 
 If you find this software useful, please consider citing our [paper](https://doi.org/10.1093/nargab/lqae066):
 ``` 
-Insana G., Martin, M.J. & Pearson, W.R.
+Insana, G., Martin, M.J. & Pearson, W.R.
 Improved selection of canonical proteins for reference proteomes
 NAR Genomics and Bioinformatics (2024). https://doi.org/10.1093/nargab/lqae066
 ```
