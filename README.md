@@ -9,7 +9,7 @@ For unreviewed (UniProtKB/TrEMBL) protein sequences (and for some reviewed seque
 
 The Ortho2tree data pipeline examines Gene-Centric canonical and isoform sequences from sets of orthologous proteins (from [PantherDB](https://www.pantherdb.org/)), builds multiple alignments, constructs gap-distance trees, and identifies low-cost clades of isoforms with similar lengths. Canonical choices can be either confirmed or a better one proposed.
 
-The pipeline and the underlying analysis is described in the manuscript *"Improved selection of canonical proteins for reference proteomes"*, whose pre-print is [available at BioRxiv](https://doi.org/10.1101/2024.03.04.583387).
+The pipeline and the underlying analysis is described in the journal article *"[Improved selection of canonical proteins for reference proteomes](https://doi.org/10.1093/nargab/lqae066)"*.
 
 An overview of the pipeline is shown in this figure:
 ![ortho2tree pipeline overview](ortho2tree_pipeline.jpg)
@@ -138,3 +138,32 @@ A script to generate the pdf files is included under the folder [pdfcreation/](p
 - [Zenodo resource](https://zenodo.org/records/10778115)
 - [FigShare project](https://figshare.com/projects/ortho2tree/197614)
 - [BioRxiv preprint](https://doi.org/10.1101/2024.03.04.583387)
+- [NAR g&b journal article](https://doi.org/10.1093/nargab/lqae066)
+
+## CITATION
+
+
+If you find this software useful, please consider citing our [paper](https://doi.org/10.1093/nargab/lqae066):
+``` 
+Insana G., Martin, M.J. & Pearson, W.R.
+Improved selection of canonical proteins for reference proteomes
+NAR Genomics and Bioinformatics (2024). https://doi.org/10.1093/nargab/lqae066
+```
+
+Bibtex:
+```
+@article{10.1093/nargab/lqae066,
+    author = {Insana, Giuseppe and Martin, Maria J and Pearson, William R},
+    title = "{Improved selection of canonical proteins for reference proteomes}",
+    journal = {NAR Genomics and Bioinformatics},
+    volume = {6},
+    number = {2},
+    pages = {lqae066},
+    year = {2024},
+    month = {06},
+    abstract = "{The ‘canonical’ protein sets distributed by UniProt are widely used for similarity searching, and functional and structural annotation. For many investigators, canonical sequences are the only version of a protein examined. However, higher eukaryotes often encode multiple isoforms of a protein from a single gene. For unreviewed (UniProtKB/TrEMBL) protein sequences, the longest sequence in a Gene-Centric group is chosen as canonical. This choice can create inconsistencies, selecting \\&gt;95\\% identical orthologs with dramatically different lengths, which is biologically unlikely. We describe the ortho2tree pipeline, which examines Reference Proteome canonical and isoform sequences from sets of orthologous proteins, builds multiple alignments, constructs gap-distance trees, and identifies low-cost clades of isoforms with similar lengths. After examining 140 000 proteins from eight mammals in UniProtKB release 2022\_05, ortho2tree proposed 7804 canonical changes for release 2023\_01, while confirming 53 434 canonicals. Gap distributions for isoforms selected by ortho2tree are similar to those in bacterial and yeast alignments, organisms unaffected by isoform selection, suggesting ortho2tree canonicals more accurately reflect genuine biological variation. 82\\% of ortho2tree proposed-changes agreed with MANE; for confirmed canonicals, 92\\% agreed with MANE. Ortho2tree can improve canonical assignment among orthologous sequences that are \\&gt;60\\% identical, a group that includes vertebrates and higher plants.}",
+    issn = {2631-9268},
+    doi = {10.1093/nargab/lqae066},
+    url = {https://doi.org/10.1093/nargab/lqae066},
+}
+```
