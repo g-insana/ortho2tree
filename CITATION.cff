@@ -1,0 +1,36 @@
+cff-version: 1.1.0
+message: "If you use this software, please cite it as below"
+authors:
+- family-names: Insana
+  given-names: Giuseppe
+  orcid: https://orcid.org/0000-0002-8186-1026
+- family-names: Martin
+  given-names: Maria J.
+  orcid: https://orcid.org/0000-0001-5454-2815
+- family-names: Pearson
+  given-names: William R
+  orcid: https://orcid.org/0000-0002-0727-3680
+title: Pipeline for the selection of canonical proteins for reference proteomes
+
+publication:
+  authors:
+  - family-names: Insana
+    given-names: Giuseppe
+    orcid: https://orcid.org/0000-0002-8186-1026
+  - family-names: Martin
+    given-names: Maria J.
+    orcid: https://orcid.org/0000-0001-5454-2815
+  - family-names: Pearson
+    given-names: William R
+    orcid: https://orcid.org/0000-0002-0727-3680
+  doi: 10.1093/nargab/lqae066
+  title: "Improved selection of canonical proteins for reference proteomes "
+  journal: "NAR genomics and bioinformatics"
+  year: 2024
+  
+related_resources:
+  - type: code
+    url: https://github.com/g-insana/ortho2tree
+
+version: 2024.04.16
+date-released: 2024.05.04
